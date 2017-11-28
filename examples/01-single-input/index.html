@@ -1,0 +1,75 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>KeywordsJS - Example 1</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta content="True" name="HandheldFriendly">
+		<meta name="robots" content="noindex, nofollow" />
+		<script type="text/javascript" src="../scripts/keywords.min.js"></script>
+		<style>
+			body {
+				font-family: Calibri,Roboto,Sans-Serif;
+				font-size: 18px;
+			}
+			input {
+				box-shadow: 0 0 0 1px rgb(185, 185, 185);
+				height: 50px;
+				padding: 10px;
+				width: 100%;
+				background-color: rgb(240, 240, 240);
+				box-sizing: border-box;
+				font-size: inherit;
+				font-family: inherit;
+				border: 0;
+				-webkit-appearance: none;
+				-moz-appearance: none;
+				border-radius: 0;
+				width:600px;
+			}
+			button {
+				font-size: inherit;
+				font-family: inherit;
+				font-weight: inherit;
+				-webkit-appearance: none;
+				-moz-appearance: none;
+				appearance: none;
+				border: none;
+				outline: none;
+				cursor: pointer;
+				height: 50px;
+				width: 100px;
+				box-sizing: border-box;
+				fill: rgb(255, 255, 255);
+				color: rgb(255, 255, 255);
+				box-shadow: 0 0 0 1px rgb(0, 0, 0);
+				padding: 10px;
+				text-align: center;
+				background-color: rgb(30,130,230);
+			}
+		</style>
+	</head>
+	<body>
+		<form action="endpoint.html" method="get">
+			<h4>Keywords</h4>
+			<input id="keywords" type="text" name="keywords" />
+			<button>Go</button>
+		</form>
+	</body>
+	<script>
+		var keywords = new Keywords({
+			'selector': '#keywords',
+			'colors' : {
+				'default' : {
+					'background' : 'white',
+					'color' : 'rgb(102, 102, 102)',
+					'box-shadow' : '0 0 1px 1px rgb(180, 180, 180)'
+				},
+				'highlight' : {
+					'background' : 'rgb(0,140,240)',
+					'color' : 'white',
+				}
+			}
+		});
+	</script>
+</body>
