@@ -1,6 +1,6 @@
 # KeywordsJS
 
-This is a simple script that will prettify space-delimited inputs.
+A light, dependency-free script to prettify space-delimited inputs.
 
 ## Purpose
 
