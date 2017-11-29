@@ -45,13 +45,17 @@
 
 			// SET UP CHOICES
 
-			var choices = 'choices' in params ? params.choices : [];
+			var choicesArray = 'choices' in params ? params.choices : [];
+			var choicesString = '';
+			for ( var i = 0, l = choicesArray.length; i < l; i++ ) {
+				choicesString += '<li>' + choicesArray[i] + '</li>'
+			}
 
 			// SET UP CSS ELEMENT
 
 			self.css = document.createElement('style');
 			self.css.type = 'text/css';
-			self.css.innerHTML = '.kwjs-outerwrap { position: relative; } .kwjs-keywordwrap { pointer-events: none; position: absolute; padding: 4px 0 4px 4px; } .kwjs-keyword { display: inline-block; pointer-events: auto; position: relative; border-radius: 2px; box-sizing: border-box; margin-right: 4px; } .kwjs-choiceswrap { position: absolute; top: 100%; left: 0; right: 0; list-style: none; }'
+			self.css.innerHTML = '.kwjs-outerwrap { position: relative; } .kwjs-keywordwrap { pointer-events: none; position: absolute; padding: 4px 0 4px 4px; } .kwjs-keyword { display: inline-block; pointer-events: auto; position: relative; border-radius: 2px; box-sizing: border-box; margin-right: 4px; } .kwjs-choiceswrap { position: absolute; top: calc(100% + 2px); left: 0; right: 0; list-style: none; margin:0; padding:0; transform: scaleY(0); transform-origin:top; transition:transform 0.2s } .kwjs-choiceswrap li { cursor:pointer; padding:5px } .kwjs-choiceswrap li:hover { background:white; } :focus ~ .kwjs-choiceswrap { transform:none; }';
 			
 			document.body.appendChild(self.css);
 
@@ -74,6 +78,7 @@
 			self.el.keywordWrap = document.createElement('div');
 			self.el.template = document.createElement('div');
 			self.el.choicesWrap = document.createElement('ul');
+			self.el.choicesWrap.innerHTML = choicesString;
 			self.el.highlighted = null;
 
 			// ASSIGN CLASSES TO ELEMENTS
@@ -109,6 +114,12 @@
 				'line-height' : (parseInt(inputStyles.getPropertyValue('height'))-8)+'px',
 			});
 
+			addStyles( self.el.choicesWrap, {
+				'background' : inputStyles.getPropertyValue('background'),
+				'background-color' : inputStyles.getPropertyValue('background-color'),
+				'box-shadow' : inputStyles.getPropertyValue('box-shadow'),
+			});
+
 			addStyles( self.el.template, self.colors.default );
 
 			// MOVE ELEMENTS AROUND
@@ -118,7 +129,9 @@
 			self.el.outerWrap.appendChild(self.el.hidden);
 			self.el.outerWrap.appendChild(self.el.input);
 			self.el.outerWrap.appendChild(self.el.keywordWrap);
-			self.el.outerWrap.appendChild(self.el.choicesWrap);
+			if ( choicesArray.length > 0 ) {
+				self.el.outerWrap.appendChild(self.el.choicesWrap);
+			}
 
 			// RUN INITIAL PARSING IN CASE THERE ARE PRE-FILLED IN VALUES
 
