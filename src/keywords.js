@@ -51,6 +51,7 @@
 
 			self.css = document.createElement('style');
 			self.css.type = 'text/css';
+			self.css.innerHTML = '.kwjs-outerwrap { position: relative; } .kwjs-keywordwrap { pointer-events: none; position: absolute; padding: 4px 0 4px 4px; } .kwjs-keyword { display: inline-block; pointer-events: auto; position: relative; border-radius: 2px; box-sizing: border-box; margin-right: 4px; } .kwjs-choiceswrap { position: absolute; top: 100%; left: 0; right: 0; list-style: none; }'
 			
 			document.body.appendChild(self.css);
 
@@ -81,13 +82,6 @@
 			self.el.keywordWrap.className = 'kwjs-keywordwrap';
 			self.el.template.className = 'kwjs-keyword';
 			self.el.choicesWrap.className = 'kwjs-choiceswrap';
-
-			// ASSIGN STYLES TO CLASSES
-
-			self.addCSS('.kwjs-outerwrap', { 'position' : 'relative' });
-			self.addCSS('.kwjs-keywordwrap', { 'pointer-events' : 'none', 'position' : 'absolute', 'padding' : '4px 0 4px 4px' });
-			self.addCSS('.kwjs-keyword', { 'display' : 'inline-block', 'pointer-events' : 'auto', 'position' : 'relative', 'border-radius' : '2px', 'box-sizing' : 'border-box', 'margin-right' : '4px' });
-			self.addCSS('.kwjs-choiceswrap', { 'position' : 'absolute', 'top' : '100%', 'left' : '0', 'right' : '0', 'list-style' : 'none', });
 
 			// ASSIGN HARDCODED STYLES TO ELEMENTS. THESE ARE DEPENDENT ON THE
 			// STYLES THAT ARE ASSIGNED TO THE INPUT BEING TARGETED, AND MIGHT
@@ -466,30 +460,6 @@
 			}
 
 		};
-
-		Class.prototype.addCSS = function( selector, styles ) {
-
-			// STORE this AS self, SO THAT IT IS ACCESSIBLE IN SUB-FUNCTIONS AND TIMEOUTS.
-
-			var self = this;
-
-			// SET UP TEMP VARIABLE TO HOLD STRING
-
-			var newStyles = selector + ' { ';
-
-			for ( var name in styles ) {
-
-				newStyles += name + ': ' + styles[name] + '; ';
-
-			}
-
-			newStyles += ' } ';
-
-			// ADD CSS STRING TO CSS ELEMENT
-
-			self.css.innerHTML += newStyles;
-
-		}
 
 		/***************************************/
 		/********** PRIVATE FUNCTIONS **********/
