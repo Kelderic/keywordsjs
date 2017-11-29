@@ -73,6 +73,7 @@
 			self.el.outerWrap.className = 'kwjs-outerwrap';
 			self.el.keywordWrap.className = 'kwjs-keywordwrap';
 			self.el.template.className = 'kwjs-keyword';
+			self.el.choicesWrap.className = 'kwjs-choiceswrap';
 
 			// ASSIGN HARDCODED STYLES TO ELEMENTS
 
@@ -89,7 +90,7 @@
 				'top' : inputStyles.getPropertyValue('border-top-width'),
 				'left' : inputStyles.getPropertyValue('border-left-width'),
 				'padding' : '4px 0 4px 4px'
-			});
+			});			
 
 			css( self.el.template, {
 				'padding-left' : (parseInt(inputStyles.getPropertyValue('padding-left'))-2)+'px',
