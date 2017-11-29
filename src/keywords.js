@@ -43,6 +43,10 @@
 
 			self.delimiter = 'delimiter' in params ? params.delimiter : ' ';
 
+			// SET UP CHOICES
+
+			var choices = 'choices' in params ? params.choices : [];
+
 			// SET UP ELEMENT REFERENCES CONTAINER
 
 			self.el = {};
@@ -61,9 +65,16 @@
 			self.el.outerWrap = document.createElement('div');
 			self.el.keywordWrap = document.createElement('div');
 			self.el.template = document.createElement('div');
+			self.el.choicesWrap = document.createElement('ul');
 			self.el.highlighted = null;
 
-			// ASSIGN STYLES TO ELEMENTS
+			// ASSIGN CLASSES TO ELEMENTS
+
+			self.el.outerWrap.className = 'kwjs-outerwrap';
+			self.el.keywordWrap.className = 'kwjs-keywordwrap';
+			self.el.template.className = 'kwjs-keyword';
+
+			// ASSIGN HARDCODED STYLES TO ELEMENTS
 
 			var inputStyles = window.getComputedStyle(self.el.input, null);
 
@@ -96,6 +107,14 @@
 				'line-height' : (parseInt(inputStyles.getPropertyValue('height'))-8)+'px',
 			});
 
+			css( self.el.choicesWrap, {
+				'position' : 'absolute',
+				'top' : '100%',
+				'left' : '0',
+				'right' : '0',
+				'list-style' : 'none',
+			});
+
 			css( self.el.template, self.colors.default );
 
 			// MOVE ELEMENTS AROUND
@@ -105,6 +124,7 @@
 			self.el.outerWrap.appendChild(self.el.hidden);
 			self.el.outerWrap.appendChild(self.el.input);
 			self.el.outerWrap.appendChild(self.el.keywordWrap);
+			self.el.outerWrap.appendChild(self.el.choicesWrap);
 
 			// RUN INITIAL PARSING IN CASE THERE ARE PRE-FILLED IN VALUES
 
