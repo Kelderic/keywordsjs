@@ -79,12 +79,12 @@
 
 			var inputStyles = window.getComputedStyle(self.el.input, null);
 
-			css( self.el.outerWrap, {
+			addStyles( self.el.outerWrap, {
 				'position' : 'relative',
 				'display' : ( inputStyles.getPropertyValue('display') == 'inline' ? 'inline-block' : inputStyles.getPropertyValue('display') )
 			});
 
-			css( self.el.keywordWrap, {
+			addStyles( self.el.keywordWrap, {
 				'pointer-events' : 'none',
 				'position' : 'absolute',
 				'top' : inputStyles.getPropertyValue('border-top-width'),
@@ -92,7 +92,7 @@
 				'padding' : '4px 0 4px 4px'
 			});			
 
-			css( self.el.template, {
+			addStyles( self.el.template, {
 				'padding-left' : (parseInt(inputStyles.getPropertyValue('padding-left'))-2)+'px',
 				'padding-right' : (parseInt(inputStyles.getPropertyValue('padding-right'))-2+20)+'px', // PLUS 20 HERE TO MAKE ROOM FOR THE "x"
 				'font-size' : inputStyles.getPropertyValue('font-size'),
@@ -108,7 +108,7 @@
 				'line-height' : (parseInt(inputStyles.getPropertyValue('height'))-8)+'px',
 			});
 
-			css( self.el.choicesWrap, {
+			addStyles( self.el.choicesWrap, {
 				'position' : 'absolute',
 				'top' : '100%',
 				'left' : '0',
@@ -116,7 +116,7 @@
 				'list-style' : 'none',
 			});
 
-			css( self.el.template, self.colors.default );
+			addStyles( self.el.template, self.colors.default );
 
 			// MOVE ELEMENTS AROUND
 
@@ -388,7 +388,7 @@
 
 			// APPLY HIGHLIGHT STYLES
 
-			css( keywordEl, self.colors.highlight );
+			addStyles( keywordEl, self.colors.highlight );
 
 			self.el.input.blur();
 
@@ -408,7 +408,7 @@
 
 			// APPLY HIGHLIGHT STYLES
 
-			css( keywordEl, self.colors.default );
+			addStyles( keywordEl, self.colors.default );
 
 			// STORE REFERENCES
 
@@ -472,7 +472,7 @@
 		/********** PRIVATE FUNCTIONS **********/
 		/***************************************/
 
-		function css( element, styles ) {
+		function addStyles( element, styles ) {
 
 			for ( var name in styles ) {
 
