@@ -47,6 +47,13 @@
 
 			var choices = 'choices' in params ? params.choices : [];
 
+			// SET UP CSS ELEMENT
+
+			self.css = document.createElement('style');
+			self.css.type = 'text/css';
+			
+			document.body.appendChild(self.css);
+
 			// SET UP ELEMENT REFERENCES CONTAINER
 
 			self.el = {};
@@ -75,21 +82,27 @@
 			self.el.template.className = 'kwjs-keyword';
 			self.el.choicesWrap.className = 'kwjs-choiceswrap';
 
-			// ASSIGN HARDCODED STYLES TO ELEMENTS
+			// ASSIGN STYLES TO CLASSES
+
+			self.addCSS('.kwjs-outerwrap', { 'position' : 'relative' });
+			self.addCSS('.kwjs-keywordwrap', { 'pointer-events' : 'none', 'position' : 'absolute', 'padding' : '4px 0 4px 4px' });
+			self.addCSS('.kwjs-keyword', { 'display' : 'inline-block', 'pointer-events' : 'auto', 'position' : 'relative', 'border-radius' : '2px', 'box-sizing' : 'border-box', 'margin-right' : '4px' });
+			self.addCSS('.kwjs-choiceswrap', { 'position' : 'absolute', 'top' : '100%', 'left' : '0', 'right' : '0', 'list-style' : 'none', });
+
+			// ASSIGN HARDCODED STYLES TO ELEMENTS. THESE ARE DEPENDENT ON THE
+			// STYLES THAT ARE ASSIGNED TO THE INPUT BEING TARGETED, AND MIGHT
+			// BE DIFFERENT FOR DIFFERENT INPUTS. THEREFORE THEY CANNOT BE
+			// ASSIGNED USING CSS
 
 			var inputStyles = window.getComputedStyle(self.el.input, null);
 
 			addStyles( self.el.outerWrap, {
-				'position' : 'relative',
 				'display' : ( inputStyles.getPropertyValue('display') == 'inline' ? 'inline-block' : inputStyles.getPropertyValue('display') )
 			});
 
 			addStyles( self.el.keywordWrap, {
-				'pointer-events' : 'none',
-				'position' : 'absolute',
 				'top' : inputStyles.getPropertyValue('border-top-width'),
 				'left' : inputStyles.getPropertyValue('border-left-width'),
-				'padding' : '4px 0 4px 4px'
 			});			
 
 			addStyles( self.el.template, {
@@ -99,21 +112,7 @@
 				'font-weight' : inputStyles.getPropertyValue('font-weight'),
 				'font-style' : inputStyles.getPropertyValue('font-style'),
 				'font-family' : inputStyles.getPropertyValue('font-family'),
-				'display' : 'inline-block',
-				'pointer-events' : 'auto',
-				'position' : 'relative',
-				'border-radius' : '2px',
-				'box-sizing' : 'border-box',
-				'margin-right' : '4px',
 				'line-height' : (parseInt(inputStyles.getPropertyValue('height'))-8)+'px',
-			});
-
-			addStyles( self.el.choicesWrap, {
-				'position' : 'absolute',
-				'top' : '100%',
-				'left' : '0',
-				'right' : '0',
-				'list-style' : 'none',
 			});
 
 			addStyles( self.el.template, self.colors.default );
@@ -467,6 +466,30 @@
 			}
 
 		};
+
+		Class.prototype.addCSS = function( selector, styles ) {
+
+			// STORE this AS self, SO THAT IT IS ACCESSIBLE IN SUB-FUNCTIONS AND TIMEOUTS.
+
+			var self = this;
+
+			// SET UP TEMP VARIABLE TO HOLD STRING
+
+			var newStyles = selector + ' { ';
+
+			for ( var name in styles ) {
+
+				newStyles += name + ': ' + styles[name] + '; ';
+
+			}
+
+			newStyles += ' } ';
+
+			// ADD CSS STRING TO CSS ELEMENT
+
+			self.css.innerHTML += newStyles;
+
+		}
 
 		/***************************************/
 		/********** PRIVATE FUNCTIONS **********/
