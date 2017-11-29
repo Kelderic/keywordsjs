@@ -57,7 +57,7 @@
 
 			self.css = document.createElement('style');
 			self.css.type = 'text/css';
-			self.css.innerHTML = '.kwjs-outerwrap { position: relative; } .kwjs-keywordwrap { pointer-events: none; position: absolute; padding: 4px 0 4px 4px; } .kwjs-keyword { display: inline-block; pointer-events: auto; position: relative; border-radius: 2px; box-sizing: border-box; margin-right: 4px; } .kwjs-choiceswrap { position: absolute; top: calc(100% + 2px); left: 0; right: 0; list-style: none; margin:0; padding:0; transform: scaleY(0); transform-origin:top; transition:transform 0.2s } .kwjs-choiceswrap li { cursor:pointer; padding:5px } .kwjs-choiceswrap li:hover { background:white; } :focus ~ .kwjs-choiceswrap { transform:none; }';
+			self.css.innerHTML = '.kwjs-outerwrap { position: relative; } .kwjs-keywordwrap { pointer-events: none; position: absolute; padding: 4px 0 4px 4px; } .kwjs-keyword { display: inline-block; pointer-events: auto; position: relative; border-radius: 2px; box-sizing: border-box; margin-right: 4px; } .kwjs-choiceswrap { position: absolute; top: calc(100% + 2px); left: 0; right: 0; list-style: none; margin:0; padding:0; transform: scaleY(0); transform-origin:top; transition:transform 0.2s } .kwjs-choiceswrap li { cursor:pointer; padding:5px } .kwjs-choiceswrap li:hover { background:white; } li.kwjs-alreadychosen, li.kwjs-filteredout { display:none; } .kwjs-focused .kwjs-choiceswrap { transform:none; }';
 			
 			document.body.appendChild(self.css);
 
@@ -153,7 +153,25 @@
 
 			});
 
+			self.el.choicesWrap.addEventListener('mousedown', function(event) {
+
+				if ( event.target.nodeName.toLowerCase() == 'li' ) {
+
+					self.addKeyword( event.target.textContent );
+
+				}
+
+				window.setTimeout(function(event){
+
+					self.el.input.focus();
+
+				}, 10);
+
+			});
+
 			self.el.outerWrap.addEventListener('focusin', function(event) {
+
+				self.el.outerWrap.classList.add('kwjs-focused');
 
 				if ( self.el.highlighted ) {
 
@@ -164,6 +182,16 @@
 			});
 
 			self.el.outerWrap.addEventListener('focusout', function(event) {
+
+				window.setTimeout(function(event){
+
+					if ( ! self.el.outerWrap.contains( document.activeElement ) ) {
+
+						self.el.outerWrap.classList.remove('kwjs-focused');
+
+					}
+
+				}, 20);
 
 				if ( self.el.input.value ) {
 
@@ -364,6 +392,14 @@
 
 				self.el.hidden.value = self.buildRealStringFromKeywords();
 
+				// UPDATE CHOICES
+
+				if ( self.restrict ) {
+
+					self.updateDisabledChoicesFromKeywords();
+
+				}
+
 			}
 
 		};
@@ -385,6 +421,14 @@
 			// UPDATE HIDDEN SPACE DELIMITED VALUE
 
 			self.el.hidden.value = self.buildRealStringFromKeywords();
+
+			// UPDATE CHOICES
+
+			if ( self.restrict ) {
+
+				self.updateDisabledChoicesFromKeywords();
+
+			}
 
 		};
 
@@ -475,6 +519,33 @@
 			}
 
 		};
+
+		Class.prototype.updateDisabledChoicesFromKeywords = function() { // console.log('Running: self.buildRealStringFromKeywords');
+
+			// STORE this AS self, SO THAT IT IS ACCESSIBLE IN SUB-FUNCTIONS AND TIMEOUTS.
+
+			var self = this;
+
+			// LOOP THROUGH KEYWORDS AND DISABLE ANY CHOICES WHICH ARE ALREADY KEYWORDS
+
+			var choicesEls = self.el.choicesWrap.children;
+
+			for ( var i = 0, l = choicesEls.length; i < l; i++ ) {
+
+				if ( self.el.hidden.value.indexOf(choicesEls[i].textContent) > -1 ) {
+
+					choicesEls[i].className = 'kwjs-alreadychosen';
+
+				} else {
+
+					choicesEls[i].className = '';
+
+				}
+
+			}
+
+		};
+
 
 		/***************************************/
 		/********** PRIVATE FUNCTIONS **********/
