@@ -45,10 +45,12 @@
 
 			// SET UP CHOICES
 
+			self.restrict = false;
 			var choicesArray = 'choices' in params ? params.choices : [];
 			var choicesString = '';
 			for ( var i = 0, l = choicesArray.length; i < l; i++ ) {
-				choicesString += '<li>' + choicesArray[i] + '</li>'
+				choicesString += '<li>' + choicesArray[i] + '</li>';
+				self.restrict = true;
 			}
 
 			// SET UP CSS ELEMENT
