@@ -47,7 +47,7 @@
 
 			self.restrict = false;
 			var choicesArray = 'choices' in params ? params.choices : [];
-			var choicesString = '';
+			var choicesString = '<li class="kwjs-filteredout" style="color:gray;font-style:italic;pointer-events:none">Unallowed</li>';
 			for ( var i = 0, l = choicesArray.length; i < l; i++ ) {
 				choicesString += '<li>' + choicesArray[i] + '</li>';
 				self.restrict = true;
@@ -81,6 +81,7 @@
 			self.el.template = document.createElement('div');
 			self.el.choicesWrap = document.createElement('ul');
 			self.el.choicesWrap.innerHTML = choicesString;
+			self.el.unallowed = self.el.choicesWrap.firstElementChild;
 			self.el.highlighted = null;
 
 			// ASSIGN CLASSES TO ELEMENTS
@@ -207,9 +208,11 @@
 
 			});
 
-			self.el.outerWrap.addEventListener('keypress', function(event) { console.log(event.which)
+			self.el.outerWrap.addEventListener('keypress', function(event) {
 
 				if ( event.which == self.delimiter.charCodeAt(0) ) { // console.log('Delimitor Key');
+
+					event.preventDefault();
 
 					if ( self.el.input.value ) {
 
@@ -223,11 +226,27 @@
 
 					}
 
+				} else {
+
+					if ( event.key != 'Backspace' && event.key != 'Delete' && event.key != 'ArrowLeft' && event.key != 'ArrowRight' && ! event.ctrlKey ) {
+
+						//if ( self.inputIsAllowed( self.el.input.value + event.key ) ) {
+
+						 	self.updateFilteredChoicesFromInput( self.el.input.value + event.key );
+
+						//} else {
+
+						//	event.preventDefault();
+
+						//}
+
+					}
+
 				}
 
 			});
 
-			self.el.outerWrap.addEventListener('keydown', function(event) { console.log(event.which)
+			self.el.outerWrap.addEventListener('keydown', function(event) {
 
 				if ( event.which == 13 ) { // console.log('Enter Key');
 
@@ -273,6 +292,14 @@
 
 						}
 
+					} else {
+
+						window.setTimeout( function(event){
+
+							self.updateFilteredChoicesFromInput( self.el.input.value );
+
+						}, 10 );
+
 					}
 
 				} else if ( event.which == 46 ) { // console.log('Delete Key');
@@ -296,6 +323,14 @@
 							self.removeKeyword( current );
 
 						}
+
+					} else {
+
+						window.setTimeout( function(event){
+
+							self.updateFilteredChoicesFromInput( self.el.input.value );
+
+						}, 10 );
 
 					}
 
@@ -321,6 +356,10 @@
 						}
 
 					}
+
+				} else if ( event.which == 40 ) { // console.log('Arrow Down Key');
+
+					event.preventDefault();
 
 				} else if ( event.which == 39 ) { // console.log('Arrow Right Key');
 
@@ -350,6 +389,20 @@
 
 			});
 
+			self.el.outerWrap.addEventListener('paste', function(event) {
+
+				window.setTimeout(function(event){
+
+					if ( self.inputIsAllowed( self.el.input.value ) ) {
+
+					 	self.updateFilteredChoicesFromInput( self.el.input.value );
+
+					}
+
+				},0);
+
+			});
+
 		};
 
 		/***************************************/
@@ -362,41 +415,63 @@
 
 			var self = this;
 
-			// IF THE KEYWORD STRING IS NOT EMPTY
+			// CONFIRM THE KEYWORD STRING ISN'T EMPTY
 
-			if ( keyword ) {
+			if ( keyword != '' ) {
 
-				// CREATE NEW KEYWORD ELEMENT
-
-				var keywordEl = self.el.template.cloneNode()
-
-				var closeIcon = '<svg style="pointer-events:none;height:14px;width:14px;" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 16 16"><polygon points="15,3 13,1 8,6 3,1 1,3 6,8 1,13 3,15 8,10 13,15 15,13 10,8 "/></svg>';
-
-				var buttonStyles = 'appearance:none; fill:inherit; color:inherit; font-size:0; background:transparent; border:none; box-shadow:none; cursor:pointer; position:absolute; top:calc(50% - 10px); right:2px; padding:4px; height:auto; width:auto;';
-
-				keywordEl.innerHTML = keyword + '<button type="button" style="' + buttonStyles + '">' + closeIcon + '</button>';
-
-				// ADD IT TO KEYWORD WRAP
-
-				self.el.keywordWrap.appendChild( keywordEl );
-
-				// REMOVE TEXT FROM INPUT
-
-				self.el.input.value = '';
-
-				// UPDATE PADDING ON INPUT
-
-				self.el.input.style['padding-left'] = ( self.el.keywordWrap.offsetWidth + 6 ) + 'px';
-
-				// UPDATE HIDDEN SPACE DELIMITED VALUE
-
-				self.el.hidden.value = self.buildRealStringFromKeywords();
-
-				// UPDATE CHOICES
+				// CORRECT KEYWORD AGAINST AVAILABLE CHOICES
 
 				if ( self.restrict ) {
 
-					self.updateDisabledChoicesFromKeywords();
+					keyword = self.correctKeyword( keyword );
+
+				}
+
+				// IF KEYWORD HAS BEEN CORRECTED TO BLANK
+
+				if ( keyword == '' ) {
+
+					self.el.input.value = '';
+
+					self.resetFilteredChoices();
+
+				} else {
+
+					// CREATE NEW KEYWORD ELEMENT
+
+					var keywordEl = self.el.template.cloneNode()
+
+					var closeIcon = '<svg style="pointer-events:none;height:14px;width:14px;" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 16 16"><polygon points="15,3 13,1 8,6 3,1 1,3 6,8 1,13 3,15 8,10 13,15 15,13 10,8 "/></svg>';
+
+					var buttonStyles = 'appearance:none; fill:inherit; color:inherit; font-size:0; background:transparent; border:none; box-shadow:none; cursor:pointer; position:absolute; top:calc(50% - 10px); right:2px; padding:4px; height:auto; width:auto;';
+
+					keywordEl.innerHTML = keyword + '<button type="button" style="' + buttonStyles + '">' + closeIcon + '</button>';
+
+					// ADD IT TO KEYWORD WRAP
+
+					self.el.keywordWrap.appendChild( keywordEl );
+
+					// UPDATE PADDING ON INPUT
+
+					self.el.input.style['padding-left'] = ( self.el.keywordWrap.offsetWidth + 6 ) + 'px';
+
+					// UPDATE HIDDEN SPACE DELIMITED VALUE
+
+					self.el.hidden.value = self.buildRealStringFromKeywords();
+
+					// REMOVE TEXT FROM INPUT
+
+					self.el.input.value = '';
+
+					// UPDATE CHOICES
+
+					if ( self.restrict ) {
+
+						self.updateAlreadyChosenChoicesFromKeywords();
+
+						self.resetFilteredChoices();
+
+					}
 
 				}
 
@@ -426,7 +501,7 @@
 
 			if ( self.restrict ) {
 
-				self.updateDisabledChoicesFromKeywords();
+				self.updateAlreadyChosenChoicesFromKeywords();
 
 			}
 
@@ -520,7 +595,7 @@
 
 		};
 
-		Class.prototype.updateDisabledChoicesFromKeywords = function() { // console.log('Running: self.buildRealStringFromKeywords');
+		Class.prototype.updateAlreadyChosenChoicesFromKeywords = function() { // console.log('Running: self.buildRealStringFromKeywords');
 
 			// STORE this AS self, SO THAT IT IS ACCESSIBLE IN SUB-FUNCTIONS AND TIMEOUTS.
 
@@ -530,15 +605,15 @@
 
 			var choicesEls = self.el.choicesWrap.children;
 
-			for ( var i = 0, l = choicesEls.length; i < l; i++ ) {
+			for ( var i = 1, l = choicesEls.length; i < l; i++ ) {
 
 				if ( self.el.hidden.value.indexOf(choicesEls[i].textContent) > -1 ) {
 
-					choicesEls[i].className = 'kwjs-alreadychosen';
+					choicesEls[i].classList.add('kwjs-alreadychosen');
 
 				} else {
 
-					choicesEls[i].className = '';
+					choicesEls[i].classList.remove('kwjs-alreadychosen');
 
 				}
 
@@ -546,6 +621,121 @@
 
 		};
 
+		Class.prototype.updateFilteredChoicesFromInput = function( userInput ) { //console.log('Running: self.updateFilteredChoicesFromInput');
+
+			// STORE this AS self, SO THAT IT IS ACCESSIBLE IN SUB-FUNCTIONS AND TIMEOUTS.
+
+			var self = this;
+
+			// SETUP LOCAL VARIABLES
+
+			var availableChoices, availableChoice, isAllowed = false;
+
+			// GRAB ALL AVAILABLE CHOICES
+
+			availableChoices = self.el.choicesWrap.querySelectorAll(':not(.kwjs-alreadychosen)');
+
+			// LOOP THROUGH, COMPARE STRINGS
+
+			for ( var i = 1, l = availableChoices.length; i < l; i++ ) {
+
+				availableChoice = availableChoices[i].textContent.toLowerCase();
+
+				userInput = userInput.toLowerCase();
+
+				if ( availableChoice.indexOf( userInput ) == 0 ) {
+
+					availableChoices[i].classList.remove('kwjs-filteredout');
+
+					isAllowed = true;
+
+				} else {
+
+					availableChoices[i].classList.add('kwjs-filteredout');
+
+				}
+
+			}
+
+			if ( isAllowed ) {
+
+				self.el.unallowed.classList.add('kwjs-filteredout');
+
+			} else {
+
+				self.el.unallowed.classList.remove('kwjs-filteredout');
+
+			}
+
+		};
+
+		Class.prototype.resetFilteredChoices = function() { //console.log('Running: self.resetFilteredChoices');
+
+			// STORE this AS self, SO THAT IT IS ACCESSIBLE IN SUB-FUNCTIONS AND TIMEOUTS.
+
+			var self = this;
+
+			// SETUP LOCAL VARIABLES
+
+			var availableChoices
+
+			// GRAB ALL AVAILABLE CHOICES
+
+			availableChoices = self.el.choicesWrap.querySelectorAll(':not(.kwjs-alreadychosen)');
+
+			// LOOP THROUGH
+
+			for ( var i = 1, l = availableChoices.length; i < l; i++ ) {
+
+				availableChoices[i].classList.remove('kwjs-filteredout');
+
+			}
+
+			self.el.unallowed.classList.add('kwjs-filteredout');
+
+		};
+
+		Class.prototype.correctKeyword = function( userInput ) { //console.log('Running: self.inputIsAllowed');
+
+			// STORE this AS self, SO THAT IT IS ACCESSIBLE IN SUB-FUNCTIONS AND TIMEOUTS.
+
+			var self = this;
+
+			// THIS ONLY NEEDS TO CHECK AGAINST CHOICES IF THERE ARE CHOICES
+
+			if ( ! self.restrict ) {
+
+				return true;
+
+			}
+
+			// SETUP LOCAL VARIABLES
+
+			var availableChoices, availableChoice;
+
+			// GRAB ALL AVAILABLE CHOICES
+
+			availableChoices = self.el.choicesWrap.querySelectorAll(':not(.kwjs-alreadychosen)');
+
+			// LOOP THROUGH, COMPARE STRINGS
+
+			for ( var i = 0, l = availableChoices.length; i < l; i++ ) {
+
+				availableChoice = availableChoices[i].textContent.toLowerCase();
+
+				userInput = userInput.toLowerCase();
+
+				if ( availableChoice.indexOf( userInput ) == 0 ) {
+
+					return availableChoices[i].textContent;
+
+				}
+
+			}
+
+			return '';
+
+		};
 
 		/***************************************/
 		/********** PRIVATE FUNCTIONS **********/
