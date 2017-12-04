@@ -62,7 +62,7 @@
 			self.css.innerHTML += '.kwjs-keyword { display: inline-block; pointer-events: auto; position: relative; border-radius: 2px; box-sizing: border-box; margin-right: 4px; } ';
 			self.css.innerHTML += '.kwjs-choiceswrap { position: absolute; top: calc(100% + 2px); left: 0; right: 0; max-height:300px; overflow:auto; list-style: none; margin:0; padding:0; transform: scaleY(0); transform-origin:top; transition:transform 0.2s } ';
 			self.css.innerHTML += '.kwjs-choiceswrap li { cursor:pointer; padding:5px } ';
-			self.css.innerHTML += '.kwjs-choiceswrap li:hover { background:white; } ';
+			self.css.innerHTML += '.kwjs-choiceswrap li:hover, li.kwjs-highlighted { background:white; } ';
 			self.css.innerHTML += 'li.kwjs-alreadychosen, li.kwjs-filteredout { display:none; } ';
 			self.css.innerHTML += '.kwjs-focused .kwjs-choiceswrap { transform:none; } ';
 			
