@@ -88,6 +88,7 @@
 			self.el.template = document.createElement('div');
 			self.el.choicesWrap = document.createElement('ul');
 			self.el.choicesWrap.innerHTML = choicesString;
+			self.el.choicesWrap.tabIndex = -1;
 			self.el.unallowed = self.el.choicesWrap.firstElementChild;
 			self.el.highlightedKeyword = null;
 			self.el.highlightedChoice = null;
