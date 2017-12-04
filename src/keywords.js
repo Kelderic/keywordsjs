@@ -43,6 +43,10 @@
 
 			self.delimiter = 'delimiter' in params ? params.delimiter : ' ';
 
+			// SET UP FLAG FOR DRAGGING
+
+			self.dragging = false;
+
 			// SET UP CHOICES
 
 			self.restrict = false;
@@ -59,7 +63,7 @@
 			self.css.type = 'text/css';
 			self.css.innerHTML += '.kwjs-outerwrap { position: relative; } ';
 			self.css.innerHTML += '.kwjs-keywordwrap { pointer-events: none; position: absolute; padding: 4px 0 4px 4px; } ';
-			self.css.innerHTML += '.kwjs-keyword { display: inline-block; pointer-events: auto; position: relative; border-radius: 2px; box-sizing: border-box; margin-right: 4px; } ';
+			self.css.innerHTML += '.kwjs-keyword { display: inline-block; vertical-align:bottom; pointer-events: auto; position: relative; border-radius: 2px; box-sizing: border-box; margin-right: 4px; cursor: move } ';
 			self.css.innerHTML += '.kwjs-choiceswrap { position: absolute; top: calc(100% + 2px); left: 0; right: 0; max-height:300px; overflow:auto; list-style: none; margin:0; padding:0; transform: scaleY(0); transform-origin:top; transition:transform 0.2s } ';
 			self.css.innerHTML += '.kwjs-choiceswrap li { cursor:pointer; padding:5px } ';
 			self.css.innerHTML += '.kwjs-choiceswrap li:hover, li.kwjs-highlighted { background:white; } ';
@@ -86,12 +90,15 @@
 			self.el.outerWrap = document.createElement('div');
 			self.el.keywordWrap = document.createElement('div');
 			self.el.template = document.createElement('div');
+			self.el.template.draggable = true;
+			self.el.dropzone = document.createElement('div');
 			self.el.choicesWrap = document.createElement('ul');
 			self.el.choicesWrap.innerHTML = choicesString;
 			self.el.choicesWrap.tabIndex = -1;
 			self.el.unallowed = self.el.choicesWrap.firstElementChild;
 			self.el.highlightedKeyword = null;
 			self.el.highlightedChoice = null;
+			self.el.beingDragged = null;
 
 			// ASSIGN CLASSES TO ELEMENTS
 
@@ -99,6 +106,7 @@
 			self.el.keywordWrap.className = 'kwjs-keywordwrap';
 			self.el.template.className = 'kwjs-keyword';
 			self.el.choicesWrap.className = 'kwjs-choiceswrap';
+			self.el.dropzone.className = 'kwjs-keyword kwjs-dropzone';
 
 			// ASSIGN HARDCODED STYLES TO ELEMENTS. THESE ARE DEPENDENT ON THE
 			// STYLES THAT ARE ASSIGNED TO THE INPUT BEING TARGETED, AND MIGHT
@@ -124,6 +132,7 @@
 				'font-style' : inputStyles.getPropertyValue('font-style'),
 				'font-family' : inputStyles.getPropertyValue('font-family'),
 				'line-height' : (parseInt(inputStyles.getPropertyValue('height'))-8)+'px',
+				'height' : (parseInt(inputStyles.getPropertyValue('height'))-8)+'px',
 			});
 
 			addStyles( self.el.choicesWrap, {
@@ -133,6 +142,14 @@
 			});
 
 			addStyles( self.el.template, self.colors.default );
+
+			addStyles(self.el.dropzone, {
+				'padding-left' : '2px',
+				'padding-right' : '2px',
+				'height' : (parseInt(inputStyles.getPropertyValue('height'))-8)+'px',
+				'background' : 'rgb(30,130,230)',
+				'margin' : '0 0 0 -4px'
+			});
 
 			// MOVE ELEMENTS AROUND
 
@@ -150,18 +167,6 @@
 			self.updateKeywordsFromRealString( self.el.hidden.value );
 
 			// ADD EVENT LISTENERS
-
-			self.el.keywordWrap.addEventListener('click', function(event) {
-
-				if ( event.target.nodeName.toLowerCase() == 'button' ) {
-
-					self.removeKeyword( event.target.parentNode );
-
-					self.el.input.focus();
-
-				}
-
-			});
 
 			self.el.choicesWrap.addEventListener('mousedown', function(event) {
 
@@ -462,6 +467,97 @@
 
 			});
 
+			self.el.keywordWrap.addEventListener('click', function(event) {
+
+				if ( event.target.nodeName.toLowerCase() == 'button' ) {
+
+					self.removeKeyword( event.target.parentNode );
+
+					self.el.input.focus();
+
+				}
+
+			});
+
+			self.el.keywordWrap.addEventListener('dragstart', function(event) {
+
+				var keywordEl = getKeywordElement( event.target );
+
+				if ( keywordEl ) {
+
+					event.dataTransfer.setData( 'text/html', keywordEl );
+
+					self.el.beingDragged = keywordEl;
+
+					self.dragging = true;
+
+				}
+
+			});
+
+			document.addEventListener('dragover', function(event) {
+				
+				event.preventDefault();
+
+				if ( self.dragging ) {
+
+					var keywordEl = getKeywordElement( event.target );
+
+					if ( keywordEl && ! keywordEl.classList.contains('kwjs-dropzone') ) {
+
+						var bounding = keywordEl.getBoundingClientRect();
+						var center = bounding.x + (bounding.width/2);
+
+						if ( event.clientX - center > 0 ) {
+
+							self.el.keywordWrap.insertBefore(self.el.dropzone, keywordEl.nextElementSibling);
+
+						} else {
+
+							self.el.keywordWrap.insertBefore(self.el.dropzone, keywordEl);
+
+						}
+
+					}
+
+				}
+
+			});
+
+			document.addEventListener('drop', function(event) { console.log(event)
+
+				event.preventDefault();
+
+				if ( self.dragging ) {
+
+					self.dragging = false;
+
+					// INSERT THE DRAGGED KEYWORD AND REMOVE THE DROPZONE
+
+					self.el.keywordWrap.insertBefore(self.el.beingDragged, self.el.dropzone);
+
+					self.el.keywordWrap.removeChild(self.el.dropzone);
+
+					// UPDATE HIDDEN SPACE DELIMITED VALUE
+
+					self.el.hidden.value = self.buildRealStringFromKeywords();
+
+				}
+
+			});
+
+
+			document.addEventListener("dragover", function( event ) {
+
+				if ( self.dragging ) {
+
+					event.preventDefault();
+
+				}
+
+			});
+
+
 		};
 
 		/***************************************/
@@ -503,7 +599,7 @@
 
 					// CREATE NEW KEYWORD ELEMENT
 
-					var keywordEl = self.el.template.cloneNode()
+					var keywordEl = self.el.template.cloneNode();
 
 					var closeIcon = '<svg style="pointer-events:none;height:14px;width:14px;" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 16 16"><polygon points="15,3 13,1 8,6 3,1 1,3 6,8 1,13 3,15 8,10 13,15 15,13 10,8 "/></svg>';
 
@@ -650,8 +746,6 @@
 				// LOOP THROUGH AND CREATE VISIBLE KEYWORD ELEMENTS
 
 				for ( var i = 0, l = keywords.length; i < l; i++ ) {
-
-					self.addKeyword( keywords[i] );
 
 					self.addKeyword({
 						keyword: keywords[i],
@@ -857,6 +951,34 @@
 			}
 
 			return -1;
+
+		}
+
+		function getKeywordElement( target ) {
+
+			if ( target.className == 'kwjs-keyword' ) {
+
+				return target;
+
+			} else {
+
+				while ( target.className != 'kwjs-keyword' && target.nodeName.toLowerCase() != 'body' ) {
+
+					target = target.parentNode;
+
+				}
+
+				if ( target.tagName.toLowerCase() == 'body' ) {
+
+					return false;
+
+				} else {
+
+					return target;
+
+				}
+
+			}
 
 		}
 
