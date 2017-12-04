@@ -235,6 +235,8 @@
 
 						}
 
+					// IF THE KEYSTROKE WASN'T THE DELIMITOR, THEN USE IT OT UPDATE FILTERED CHOICES
+
 					} else {
 
 						self.updateFilteredChoicesFromInput( self.el.input.value + event.key );
