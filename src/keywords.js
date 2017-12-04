@@ -210,7 +210,7 @@
 
 			self.el.outerWrap.addEventListener('keypress', function(event) {
 
-				if ( event.which == self.delimiter.charCodeAt(0) ) { // console.log('Delimitor Key');
+				if ( event.which == self.delimiter.charCodeAt(0) ) { //console.log('keypress: Delimitor Key');
 
 					event.preventDefault();
 
