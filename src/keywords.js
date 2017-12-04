@@ -167,7 +167,10 @@
 
 				if ( event.target.nodeName.toLowerCase() == 'li' ) {
 
-					self.addKeyword( event.target.textContent );
+					self.addKeyword({
+						keyword: event.target.textContent,
+						match: 'exact'
+					});
 
 				}
 
@@ -207,9 +210,10 @@
 
 					window.setTimeout( function(event){
 
-						var keyword = self.el.input.value.replace(self.delimiter, '');
-
-						self.addKeyword( keyword );
+						self.addKeyword({
+							keyword: self.el.input.value,
+							match: 'begins-with'
+						});
 
 					}, 10 );
 
@@ -235,9 +239,10 @@
 
 							window.setTimeout( function(event){
 
-								var keyword = self.el.input.value;
-
-								self.addKeyword( keyword );
+								self.addKeyword({
+									keyword: self.el.input.value,
+									match: 'begins-with'
+								});
 
 							}, 10 );
 
@@ -245,7 +250,10 @@
 
 							event.preventDefault();
 
-							self.addKeyword( self.el.highlightedChoice.textContent );
+							self.addKeyword({
+								keyword: self.el.highlightedChoice.textContent,
+								match: 'exact'
+							});
 
 						}
 
@@ -271,9 +279,10 @@
 
 						window.setTimeout( function(event){
 
-							var keyword = self.el.input.value;
-
-							self.addKeyword( keyword );
+							self.addKeyword({
+								keyword: self.el.input.value,
+								match: 'begins-with'
+							});
 
 						}, 10 );
 
@@ -283,7 +292,10 @@
 
 						event.preventDefault();
 
-						self.addKeyword( self.el.highlightedChoice.textContent );
+						self.addKeyword({
+							keyword: self.el.highlightedChoice.textContent,
+							match: 'exact'
+						});
 
 					}
 
@@ -456,11 +468,16 @@
 		/********** PUBLIC FUNCTIONS ***********/
 		/***************************************/
 
-		Class.prototype.addKeyword = function( keyword ) { // console.log('Running: self.addKeyword');
+		Class.prototype.addKeyword = function( params ) { // console.log('Running: self.addKeyword');
 
 			// STORE this AS self, SO THAT IT IS ACCESSIBLE IN SUB-FUNCTIONS AND TIMEOUTS.
 
 			var self = this;
+
+			// GET PARAMS
+
+			var keyword = 'keyword' in params ? params.keyword : '';
+			var match = 'match' in params ? params.match : 'exact';
 
 			// CONFIRM THE KEYWORD STRING ISN'T EMPTY
 
@@ -468,9 +485,9 @@
 
 				// CORRECT KEYWORD AGAINST AVAILABLE CHOICES
 
-				if ( self.restrict ) {
+				if ( self.restrict && match == 'begins-with' ) {
 
-					keyword = self.correctKeyword( keyword );
+					keyword = self.autoCompleteKeyword( keyword );
 
 				}
 
@@ -636,6 +653,11 @@
 
 					self.addKeyword( keywords[i] );
 
+					self.addKeyword({
+						keyword: keywords[i],
+						match: 'exact'
+					});
+
 				}
 
 			}
@@ -734,7 +756,7 @@
 
 		};
 
-		Class.prototype.correctKeyword = function( userInput ) { //console.log('Running: self.inputIsAllowed');
+		Class.prototype.autoCompleteKeyword = function( userInput ) { //console.log('Running: self.inputIsAllowed');
 
 			// STORE this AS self, SO THAT IT IS ACCESSIBLE IN SUB-FUNCTIONS AND TIMEOUTS.
 
@@ -756,7 +778,7 @@
 
 			availableChoices = self.el.choicesWrap.querySelectorAll(':not(:first-child):not(.kwjs-alreadychosen):not(.kwjs-filteredout)');
 
-			// LOOP THROUGH, COMPARE STRINGS
+			// IF THERE ISN'T AN EXACT MATCH
 
 			if ( availableChoices.length > 0 ) {
 
