@@ -228,7 +228,7 @@
 
 				} else {
 
-					if ( event.key != 'Backspace' && event.key != 'Delete' && event.key != 'ArrowLeft' && event.key != 'ArrowRight' && ! event.ctrlKey ) {
+					if ( event.key != 'Backspace' && event.key != 'Delete' && event.key != 'Tab' && event.key != 'ArrowLeft' && event.key != 'ArrowRight' && ! event.ctrlKey ) {
 
 						self.updateFilteredChoicesFromInput( self.el.input.value + event.key );
 
