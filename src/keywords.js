@@ -436,7 +436,7 @@
 
 					self.el.input.value = '';
 
-					self.resetFilteredChoices();
+					self.updateFilteredChoicesFromInput( self.el.input.value );
 
 				} else {
 
@@ -472,7 +472,7 @@
 
 						self.updateAlreadyChosenChoicesFromKeywords();
 
-						self.resetFilteredChoices();
+						self.updateFilteredChoicesFromInput( self.el.input.value );
 
 					}
 
@@ -675,32 +675,6 @@
 				}
 
 			}
-
-		};
-
-		Class.prototype.resetFilteredChoices = function() { //console.log('Running: self.resetFilteredChoices');
-
-			// STORE this AS self, SO THAT IT IS ACCESSIBLE IN SUB-FUNCTIONS AND TIMEOUTS.
-
-			var self = this;
-
-			// SETUP LOCAL VARIABLES
-
-			var availableChoices
-
-			// GRAB ALL AVAILABLE CHOICES
-
-			availableChoices = self.el.choicesWrap.querySelectorAll(':not(.kwjs-alreadychosen)');
-
-			// LOOP THROUGH
-
-			for ( var i = 1, l = availableChoices.length; i < l; i++ ) {
-
-				availableChoices[i].classList.remove('kwjs-filteredout');
-
-			}
-
-			self.el.unallowed.classList.add('kwjs-filteredout');
 
 		};
 
