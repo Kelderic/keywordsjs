@@ -227,7 +227,7 @@
 
 							window.setTimeout( function(event){
 
-								var keyword = self.el.input.value.replace(self.delimiter, '');
+								var keyword = self.el.input.value;
 
 								self.addKeyword( keyword );
 
@@ -255,7 +255,7 @@
 
 						window.setTimeout( function(event){
 
-							var keyword = self.el.input.value.replace(self.delimiter, '');
+							var keyword = self.el.input.value;
 
 							self.addKeyword( keyword );
 
