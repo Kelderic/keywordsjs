@@ -230,15 +230,7 @@
 
 					if ( event.key != 'Backspace' && event.key != 'Delete' && event.key != 'ArrowLeft' && event.key != 'ArrowRight' && ! event.ctrlKey ) {
 
-						//if ( self.inputIsAllowed( self.el.input.value + event.key ) ) {
-
-						 	self.updateFilteredChoicesFromInput( self.el.input.value + event.key );
-
-						//} else {
-
-						//	event.preventDefault();
-
-						//}
+						self.updateFilteredChoicesFromInput( self.el.input.value + event.key );
 
 					}
 
