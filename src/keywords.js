@@ -210,25 +210,32 @@
 
 			self.el.outerWrap.addEventListener('keypress', function(event) {
 
-				if ( event.which == self.delimiter.charCodeAt(0) ) { //console.log('keypress: Delimitor Key');
 
-					event.preventDefault();
+				// CHECK TO MAKE SURE THAT THE ENTERED KEY IS A PRINTABLE, SINGLE CHARACTER. AND MAKE SURE THAT
+				// CONTROL ISN'T BEING HELD DOWN. THIS AVOIDS FIRING THIS ON CONTROL-V PASTE, WHICH IS HANDLED
+				// WITH THE PASTE EVENT. BASICALLY, THIS SHOULD JUST FIRE ON REGULAR KEYBOARD ENTRY OF LETTERS.
 
-					if ( self.el.input.value ) {
+				if ( ( event.key.length === 1 ) && ( ! event.ctrlKey ) ) {
 
-						window.setTimeout( function(event){
+					// CHECK TO SEE IF THE KEYSTROKE WAS ACTUALLY THE DELIMITER.
 
-							var keyword = self.el.input.value.replace(self.delimiter, '');
+					if ( event.which == self.delimiter.charCodeAt(0) ) { //console.log('keypress: Delimitor Key');
 
-							self.addKeyword( keyword );
+						event.preventDefault();
 
-						}, 10 );
+						if ( self.el.input.value ) {
 
-					}
+							window.setTimeout( function(event){
 
-				} else {
+								var keyword = self.el.input.value.replace(self.delimiter, '');
 
-					if ( ( event.key.length === 1 ) && ( ! event.ctrlKey ) ) {
+								self.addKeyword( keyword );
+
+							}, 10 );
+
+						}
+
+					} else {
 
 						self.updateFilteredChoicesFromInput( self.el.input.value + event.key );
 
