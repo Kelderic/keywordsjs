@@ -415,17 +415,11 @@
 
 							self.highlightChoice( null );
 
-						} else if ( position > ( availableChoices.length - 1 ) ) {
-
-							// DO NOTHING
-
-						} else {
+						} else if ( position < availableChoices.length ) {
 
 							self.highlightChoice( availableChoices[position] );
 
-						}
-
-						
+						}						
 
 					}
 
@@ -700,6 +694,18 @@
 					}
 
 				}
+
+				// UN-HIGHLIGHT PREVIOUS CHOICE
+
+				if ( self.el.highlightedChoice ) {
+
+					self.el.highlightedChoice.classList.remove('kwjs-highlighted');
+
+					self.el.highlightedChoice = null;
+
+				}
+
+				// SHOW OR HIDE THE ERROR MESSAGE
 
 				if ( isAllowed ) {
 
