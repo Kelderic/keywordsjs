@@ -240,6 +240,12 @@
 
 							}, 10 );
 
+						} else if ( self.el.highlightedChoice ) {
+
+							event.preventDefault();
+
+							self.addKeyword( self.el.highlightedChoice.textContent );
+
 						}
 
 					// IF THE KEYSTROKE WASN'T THE DELIMITOR, THEN USE IT OT UPDATE FILTERED CHOICES
@@ -269,6 +275,14 @@
 							self.addKeyword( keyword );
 
 						}, 10 );
+
+					}
+
+					if ( self.el.highlightedChoice ) {
+
+						event.preventDefault();
+
+						self.addKeyword( self.el.highlightedChoice.textContent );
 
 					}
 
@@ -395,31 +409,29 @@
 
 					var position, newHightlighted, availableChoices = self.el.choicesWrap.querySelectorAll(':not(.kwjs-alreadychosen):not(.kwjs-filteredout)');
 
-					if ( ! self.el.highlightedChoice ) {
+					if ( ! self.el.highlightedKeyword ) {
 
-						self.highlightChoice( event.which == 38 ? null : availableChoices[0] );
+						if ( ! self.el.highlightedChoice ) {
 
-					} else {
+							self.highlightChoice( event.which == 38 ? null : availableChoices[0] );
 
-						for ( var i = 0, l = availableChoices.length; i < l; i++ ) {
+						} else {
 
-							if ( self.el.highlightedChoice == availableChoices[i] ) {
+							position = getPositionUnderParent( availableChoices, self.el.highlightedChoice );
 
-								position = event.which == 38 ? ( i - 1 ) : ( i + 1 );
+							position = event.which == 38 ? ( position - 1 ) : ( position + 1 );
 
-							}
+							if ( position < 0 ) {
+
+								self.highlightChoice( null );
+
+							} else if ( position < availableChoices.length ) {
+
+								self.highlightChoice( availableChoices[position] );
+
+							}						
 
 						}
-
-						if ( position < 0 ) {
-
-							self.highlightChoice( null );
-
-						} else if ( position < availableChoices.length ) {
-
-							self.highlightChoice( availableChoices[position] );
-
-						}						
 
 					}
 
@@ -737,29 +749,33 @@
 
 			// SETUP LOCAL VARIABLES
 
-			var availableChoices, availableChoice;
+			var availableChoices, position;
 
 			// GRAB ALL AVAILABLE CHOICES
 
-			availableChoices = self.el.choicesWrap.querySelectorAll(':not(.kwjs-alreadychosen)');
+			availableChoices = self.el.choicesWrap.querySelectorAll(':not(:first-child):not(.kwjs-alreadychosen):not(.kwjs-filteredout)');
 
 			// LOOP THROUGH, COMPARE STRINGS
 
-			for ( var i = 0, l = availableChoices.length; i < l; i++ ) {
+			if ( availableChoices.length > 0 ) {
 
-				availableChoice = availableChoices[i].textContent.toLowerCase();
+				if ( self.el.highlightedChoice ) {
 
-				userInput = userInput.toLowerCase();
+					position = getPositionUnderParent( availableChoices, self.el.highlightedChoice );
 
-				if ( availableChoice.indexOf( userInput ) == 0 ) {
+				} else {
 
-					return availableChoices[i].textContent;
+					position = 0;
 
 				}
 
-			}
+				return availableChoices[position].textContent;
 
-			return '';
+			} else {
+
+				return '';
+
+			}
 
 		};
 
@@ -802,6 +818,22 @@
 				element.style[name] = styles[name];
 
 			}
+
+		}
+
+		function getPositionUnderParent( parent, child ) {
+
+			for ( var i = 0, l = parent.length; i < l; i++ ) {
+
+				if ( child == parent[i] ) {
+
+					return  i;
+
+				}
+
+			}
+
+			return -1;
 
 		}
 
