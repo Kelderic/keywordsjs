@@ -437,7 +437,7 @@
 
 					var buttonStyles = 'appearance:none; fill:inherit; color:inherit; font-size:0; background:transparent; border:none; box-shadow:none; cursor:pointer; position:absolute; top:calc(50% - 10px); right:2px; padding:4px; height:auto; width:auto;';
 
-					keywordEl.innerHTML = keyword + '<button type="button" style="' + buttonStyles + '">' + closeIcon + '</button>';
+					keywordEl.innerHTML = keyword + '<button type="button" tabindex="-1" style="' + buttonStyles + '">' + closeIcon + '</button>';
 
 					// ADD IT TO KEYWORD WRAP
 
