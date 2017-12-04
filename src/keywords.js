@@ -90,6 +90,7 @@
 			self.el.choicesWrap.innerHTML = choicesString;
 			self.el.unallowed = self.el.choicesWrap.firstElementChild;
 			self.el.highlightedKeyword = null;
+			self.el.highlightedChoice = null;
 
 			// ASSIGN CLASSES TO ELEMENTS
 
@@ -364,10 +365,6 @@
 
 					}
 
-				} else if ( event.which == 40 ) { // console.log('Arrow Down Key');
-
-					event.preventDefault();
-
 				} else if ( event.which == 39 ) { // console.log('Arrow Right Key');
 
 					if ( ! self.el.input.value && self.el.keywordWrap.children.length > 0 ) {
@@ -389,6 +386,46 @@
 							}
 
 						}
+
+					}
+
+				} else if ( ( event.which == 38 ) || ( event.which == 40 ) ) { // console.log('Arrow Up Key or Down Key');
+
+					event.preventDefault();
+
+					var position, newHightlighted, availableChoices = self.el.choicesWrap.querySelectorAll(':not(.kwjs-alreadychosen):not(.kwjs-filteredout)');
+
+					if ( ! self.el.highlightedChoice ) {
+
+						self.highlightChoice( event.which == 38 ? null : availableChoices[0] );
+
+					} else {
+
+						for ( var i = 0, l = availableChoices.length; i < l; i++ ) {
+
+							if ( self.el.highlightedChoice == availableChoices[i] ) {
+
+								position = event.which == 38 ? ( i - 1 ) : ( i + 1 );
+
+							}
+
+						}
+
+						if ( position < 0 ) {
+
+							self.highlightChoice( null );
+
+						} else if ( position > ( availableChoices.length - 1 ) ) {
+
+							// DO NOTHING
+
+						} else {
+
+							self.highlightChoice( availableChoices[position] );
+
+						}
+
+						
 
 					}
 
@@ -717,6 +754,34 @@
 			}
 
 			return '';
+
+		};
+
+		Class.prototype.highlightChoice = function( choiceEl ) { // console.log('Running: self.highlightKeyword');
+
+			// STORE this AS self, SO THAT IT IS ACCESSIBLE IN SUB-FUNCTIONS AND TIMEOUTS.
+
+			var self = this;
+
+			// UN-HIGHLIGHT PREVIOUS CHOICE
+
+			if ( self.el.highlightedChoice ) {
+
+				self.el.highlightedChoice.classList.remove('kwjs-highlighted');
+
+			}
+
+			// HIGHLIGHT NEW CHOICE
+
+			if ( choiceEl ) {
+
+				choiceEl.classList.add('kwjs-highlighted');
+
+			}
+
+			// UPDATE REFERENCE
+
+			self.el.highlightedChoice = choiceEl;
 
 		};
 
