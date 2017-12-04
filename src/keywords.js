@@ -394,11 +394,7 @@
 
 				window.setTimeout(function(event){
 
-					if ( self.inputIsAllowed( self.el.input.value ) ) {
-
-					 	self.updateFilteredChoicesFromInput( self.el.input.value );
-
-					}
+					self.updateFilteredChoicesFromInput( self.el.input.value );
 
 				}, 10 );
 
