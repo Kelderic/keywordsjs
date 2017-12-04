@@ -89,7 +89,7 @@
 			self.el.choicesWrap = document.createElement('ul');
 			self.el.choicesWrap.innerHTML = choicesString;
 			self.el.unallowed = self.el.choicesWrap.firstElementChild;
-			self.el.highlighted = null;
+			self.el.highlightedKeyword = null;
 
 			// ASSIGN CLASSES TO ELEMENTS
 
@@ -181,9 +181,9 @@
 
 				self.el.outerWrap.classList.add('kwjs-focused');
 
-				if ( self.el.highlighted ) {
+				if ( self.el.highlightedKeyword ) {
 
-					self.unhighlightKeyword( self.el.highlighted );
+					self.unhighlightKeyword( self.el.highlightedKeyword );
 
 				}
 
@@ -277,9 +277,9 @@
 
 						event.preventDefault();
 
-						if ( self.el.highlighted ) {
+						if ( self.el.highlightedKeyword ) {
 
-							var current = self.el.highlighted;
+							var current = self.el.highlightedKeyword;
 
 							if ( current.previousElementSibling ) {
 
@@ -313,9 +313,9 @@
 
 					if ( ! self.el.input.value && self.el.keywordWrap.children.length > 0 ) {
 
-						if ( self.el.highlighted ) {
+						if ( self.el.highlightedKeyword ) {
 
-							var current = self.el.highlighted;
+							var current = self.el.highlightedKeyword;
 
 							if ( current.nextElementSibling ) {
 
@@ -345,9 +345,9 @@
 
 					if ( ! self.el.input.value && self.el.keywordWrap.children.length > 0 ) {
 
-						if ( self.el.highlighted ) {
+						if ( self.el.highlightedKeyword ) {
 
-							var current = self.el.highlighted;
+							var current = self.el.highlightedKeyword;
 
 							if ( current.previousElementSibling ) {
 
@@ -372,9 +372,9 @@
 
 					if ( ! self.el.input.value && self.el.keywordWrap.children.length > 0 ) {
 
-						if ( self.el.highlighted ) {
+						if ( self.el.highlightedKeyword ) {
 
-							var current = self.el.highlighted;
+							var current = self.el.highlightedKeyword;
 
 							self.unhighlightKeyword( current );
 
@@ -526,7 +526,7 @@
 
 			// STORE REFERENCES
 
-			self.el.highlighted = keywordEl;
+			self.el.highlightedKeyword = keywordEl;
 
 		};
 
@@ -542,7 +542,7 @@
 
 			// STORE REFERENCES
 
-			self.el.highlighted = null;
+			self.el.highlightedKeyword = null;
 
 		};
 
