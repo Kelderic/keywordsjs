@@ -151,6 +151,8 @@
 				'margin' : '0 0 0 -4px'
 			});
 
+			addStyles( self.el.dropzone, self.colors.highlight );
+
 			// MOVE ELEMENTS AROUND
 
 			self.el.input.parentNode.insertBefore(self.el.outerWrap, self.el.input.nextSibling);
@@ -491,6 +493,12 @@
 
 					self.dragging = true;
 
+					if ( self.el.highlightedKeyword ) {
+
+						self.unhighlightKeyword( self.el.highlightedKeyword );
+
+					}
+
 				}
 
 			});
@@ -547,7 +555,7 @@
 			});
 
 
-			document.addEventListener("dragover", function( event ) {
+			document.addEventListener('dragover', function( event ) {
 
 				if ( self.dragging ) {
 
