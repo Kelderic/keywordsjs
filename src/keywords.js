@@ -210,7 +210,6 @@
 
 			self.el.outerWrap.addEventListener('keypress', function(event) {
 
-
 				// CHECK TO MAKE SURE THAT THE ENTERED KEY IS A PRINTABLE, SINGLE CHARACTER. AND MAKE SURE THAT
 				// CONTROL ISN'T BEING HELD DOWN. THIS AVOIDS FIRING THIS ON CONTROL-V PASTE, WHICH IS HANDLED
 				// WITH THE PASTE EVENT. BASICALLY, THIS SHOULD JUST FIRE ON REGULAR KEYBOARD ENTRY OF LETTERS.
@@ -618,49 +617,55 @@
 
 		};
 
-		Class.prototype.updateFilteredChoicesFromInput = function( userInput ) { //console.log('Running: self.updateFilteredChoicesFromInput');
+		Class.prototype.updateFilteredChoicesFromInput = function( userInput ) { // console.log('Running: self.updateFilteredChoicesFromInput');
 
 			// STORE this AS self, SO THAT IT IS ACCESSIBLE IN SUB-FUNCTIONS AND TIMEOUTS.
 
 			var self = this;
 
-			// SETUP LOCAL VARIABLES
+			// CHECK TO SEE IF WE ARE RESTRICTING INPUT BASED ON A SET OF CHOICES
 
-			var availableChoices, availableChoice, isAllowed = false;
+			if ( self.restrict ) {
 
-			// GRAB ALL AVAILABLE CHOICES
+				// SETUP LOCAL VARIABLES
 
-			availableChoices = self.el.choicesWrap.querySelectorAll(':not(.kwjs-alreadychosen)');
+				var availableChoices, availableChoice, isAllowed = false;
 
-			// LOOP THROUGH, COMPARE STRINGS
+				// GRAB ALL AVAILABLE CHOICES
 
-			for ( var i = 1, l = availableChoices.length; i < l; i++ ) {
+				availableChoices = self.el.choicesWrap.querySelectorAll(':not(.kwjs-alreadychosen)');
 
-				availableChoice = availableChoices[i].textContent.toLowerCase();
+				// LOOP THROUGH, COMPARE STRINGS
 
-				userInput = userInput.toLowerCase();
+				for ( var i = 1, l = availableChoices.length; i < l; i++ ) {
 
-				if ( availableChoice.indexOf( userInput ) == 0 ) {
+					availableChoice = availableChoices[i].textContent.toLowerCase();
 
-					availableChoices[i].classList.remove('kwjs-filteredout');
+					userInput = userInput.toLowerCase();
 
-					isAllowed = true;
+					if ( availableChoice.indexOf( userInput ) == 0 ) {
 
-				} else {
+						availableChoices[i].classList.remove('kwjs-filteredout');
 
-					availableChoices[i].classList.add('kwjs-filteredout');
+						isAllowed = true;
+
+					} else {
+
+						availableChoices[i].classList.add('kwjs-filteredout');
+
+					}
 
 				}
 
-			}
+				if ( isAllowed ) {
 
-			if ( isAllowed ) {
+					self.el.unallowed.classList.add('kwjs-filteredout');
 
-				self.el.unallowed.classList.add('kwjs-filteredout');
+				} else {
 
-			} else {
+					self.el.unallowed.classList.remove('kwjs-filteredout');
 
-				self.el.unallowed.classList.remove('kwjs-filteredout');
+				}
 
 			}
 
