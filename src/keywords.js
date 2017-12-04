@@ -219,7 +219,7 @@
 
 					// CHECK TO SEE IF THE KEYSTROKE WAS ACTUALLY THE DELIMITER.
 
-					if ( event.which == self.delimiter.charCodeAt(0) ) { //console.log('keypress: Delimitor Key');
+					if ( event.key == self.delimiter ) { //console.log('keypress: Delimitor Key');
 
 						event.preventDefault();
 
