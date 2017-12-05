@@ -22,57 +22,35 @@
 
 			}
 
-			// SET UP KEYWORD COLORS
-
-			self.colors = {};
-
-			if ( 'colors' in params ) {
-
-				self.colors.default = 'default' in params.colors ? params.colors.default : {};
-				self.colors.highlight = 'highlight' in params.colors ? params.colors.highlight : {};
-
-				if ( 'color' in self.colors.default ) {
-					self.colors.default.fill = self.colors.default.color;
-				}
-
-				if ( 'color' in self.colors.highlight ) {
-					self.colors.highlight.fill = self.colors.highlight.color;
-				}
-
-			}
-
-			// SET UP DELIMITER
-
-			self.delimiter = 'delimiter' in params ? params.delimiter : ' ';
-
 			// SET UP FLAG FOR DRAGGING
 
 			self.dragging = false;
 
-			// SET UP CHOICES
-
-			self.restrict = false;
-			var choicesArray = 'choices' in params ? params.choices : [];
-			var choicesString = '<li class="kwjs-filteredout" style="color:gray;font-style:italic;pointer-events:none">Unallowed</li>';
-			for ( var i = 0, l = choicesArray.length; i < l; i++ ) {
-				choicesString += '<li>' + choicesArray[i] + '</li>';
-				self.restrict = true;
-			}
-
 			// SET UP CSS ELEMENT
 
-			self.css = document.createElement('style');
-			self.css.type = 'text/css';
-			self.css.innerHTML += '.kwjs-outerwrap { position: relative; } ';
-			self.css.innerHTML += '.kwjs-keywordwrap { pointer-events: none; position: absolute; z-index:1; padding: 4px 0 4px 4px; } ';
-			self.css.innerHTML += '.kwjs-keyword { display: inline-block; font-size: inherit; font-weight: inherit; font-style: inherit; font-family: inherit; vertical-align:bottom; pointer-events: auto; position: relative; border-radius: 2px; box-sizing: border-box; margin-right: 4px; cursor: move } ';
-			self.css.innerHTML += '.kwjs-choiceswrap { position: absolute; top: calc(100% + 2px); left: 0; right: 0; z-index:2; max-height:300px; overflow:auto; list-style: none; margin:0; padding:0; transform: scaleY(0); transform-origin:top; transition:transform 0.2s } ';
-			self.css.innerHTML += '.kwjs-choiceswrap li { cursor:pointer; padding:5px } ';
-			self.css.innerHTML += '.kwjs-choiceswrap li:hover, li.kwjs-highlighted { background:white; } ';
-			self.css.innerHTML += 'li.kwjs-alreadychosen, li.kwjs-filteredout { display:none; } ';
-			self.css.innerHTML += '.kwjs-focused .kwjs-choiceswrap { transform:none; } ';
-			
-			document.body.appendChild(self.css);
+			var existingCSS = document.querySelector('style#kwjs-css');
+
+			if ( existingCSS ) {
+
+				self.css = existingCSS;
+
+			} else {
+
+				self.css = document.createElement('style');
+				self.css.type = 'text/css';
+				self.css.id = 'kwjs-css';
+				self.css.innerHTML += '.kwjs-outerwrap { position: relative; } ';
+				self.css.innerHTML += '.kwjs-keywordwrap { pointer-events: none; position: absolute; z-index:1; padding: 4px 0 4px 4px; } ';
+				self.css.innerHTML += '.kwjs-keyword { display: inline-block; font-size: inherit; font-weight: inherit; font-style: inherit; font-family: inherit; vertical-align:bottom; pointer-events: auto; position: relative; border-radius: 2px; box-sizing: border-box; margin-right: 4px; cursor: move } ';
+				self.css.innerHTML += '.kwjs-choiceswrap { position: absolute; top: calc(100% + 2px); left: 0; right: 0; z-index:2; max-height:300px; overflow:auto; list-style: none; margin:0; padding:0; transform: scaleY(0); transform-origin:top; transition:transform 0.2s } ';
+				self.css.innerHTML += '.kwjs-choiceswrap li { cursor:pointer; padding:5px } ';
+				self.css.innerHTML += '.kwjs-choiceswrap li:hover, li.kwjs-highlighted { background:white; } ';
+				self.css.innerHTML += 'li.kwjs-alreadychosen, li.kwjs-filteredout { display:none; } ';
+				self.css.innerHTML += '.kwjs-focused .kwjs-choiceswrap { transform:none; } ';
+
+				document.body.appendChild(self.css);
+
+			}
 
 			// SET UP ELEMENT REFERENCES CONTAINER
 
@@ -91,6 +69,75 @@
 			var displayStyle = inputStyles.getPropertyValue('display');
 
 			self.el.input.type = 'hidden';
+
+			// GET OPTIONS FROM PARAMS OR FROM INPUT ATTRIBUTES
+
+			self.colors = {};
+
+			if ( 'colors' in params ) {
+
+				self.colors.default = 'default' in params.colors ? params.colors.default : {};
+				self.colors.highlight = 'highlight' in params.colors ? params.colors.highlight : {};
+
+				if ( 'color' in self.colors.default ) {
+					self.colors.default.fill = self.colors.default.color;
+				}
+
+				if ( 'color' in self.colors.highlight ) {
+					self.colors.highlight.fill = self.colors.highlight.color;
+				}
+
+			}
+
+			// CHECK FOR DELIMITER FROM PARAMS OR FROM INPUT ATTRIBUTES
+
+			if ( 'delimiter' in params ) {
+
+				self.delimiter = params.delimiter;
+
+			} else if ( self.el.input.getAttribute('kwjs-delimiter') !== null ) {
+
+				self.delimiter = self.el.input.getAttribute('kwjs-delimiter');
+
+			} else {
+
+				self.delimiter = ' ';
+
+			}
+
+			// CHECK FOR CHOICES FROM PARAMS OR FROM INPUT ATTRIBUTES
+
+			var choicesString = '';
+
+			if ( 'choices' in params ) {
+
+				var choicesArray = params.choices;
+
+			} else if ( self.el.input.getAttribute('kwjs-choices') !== null ) {
+
+				var choicesArray = self.el.input.getAttribute('kwjs-choices').split( self.delimiter );
+
+			} else {
+
+				var choicesArray = [];
+
+			}
+
+			if ( choicesArray.length > 0 ) {
+
+				choicesString = '<li class="kwjs-filteredout" style="color:gray;font-style:italic;pointer-events:none">Unallowed</li>';
+
+				for ( var i = 0, l = choicesArray.length; i < l; i++ ) {
+					choicesString += '<li>' + choicesArray[i] + '</li>';
+				}
+
+				self.restrict = true;
+
+			} else {
+
+				self.restrict = false;
+
+			}
 
 			// CREATE ELEMENTS
 
