@@ -14,7 +14,9 @@
 
 			// CHECK FOR REQUIRED SELECTOR
 
-			if ( ! 'selector' in params ) {
+			var hasSelector = 'selector' in params;
+
+			if ( ! hasSelector ) {
 
 				return false;
 
@@ -278,6 +280,8 @@
 
 			self.el.outerWrap.addEventListener('keydown', function(event) {
 
+				var currentKeyword = null;
+
 				if ( event.which == 13 ) { // console.log('Enter Key');
 
 					if ( self.el.input.value ) {
@@ -314,11 +318,11 @@
 
 						if ( self.el.highlightedKeyword ) {
 
-							var current = self.el.highlightedKeyword;
+							currentKeyword = self.el.highlightedKeyword;
 
-							if ( current.previousElementSibling ) {
+							if ( currentKeyword.previousElementSibling ) {
 
-								self.highlightKeyword( current.previousElementSibling );
+								self.highlightKeyword( currentKeyword.previousElementSibling );
 
 							} else {
 
@@ -326,7 +330,7 @@
 
 							}
 
-							self.removeKeyword( current );
+							self.removeKeyword( currentKeyword );
 
 						} else {
 
@@ -350,11 +354,11 @@
 
 						if ( self.el.highlightedKeyword ) {
 
-							var current = self.el.highlightedKeyword;
+							currentKeyword = self.el.highlightedKeyword;
 
-							if ( current.nextElementSibling ) {
+							if ( currentKeyword.nextElementSibling ) {
 
-								self.highlightKeyword( current.nextElementSibling );
+								self.highlightKeyword( currentKeyword.nextElementSibling );
 
 							} else {
 
@@ -362,7 +366,7 @@
 
 							}
 
-							self.removeKeyword( current );
+							self.removeKeyword( currentKeyword );
 
 						}
 
@@ -382,13 +386,13 @@
 
 						if ( self.el.highlightedKeyword ) {
 
-							var current = self.el.highlightedKeyword;
+							currentKeyword = self.el.highlightedKeyword;
 
-							if ( current.previousElementSibling ) {
+							if ( currentKeyword.previousElementSibling ) {
 
-								self.unhighlightKeyword( current );
+								self.unhighlightKeyword( currentKeyword );
 
-								self.highlightKeyword( current.previousElementSibling );
+								self.highlightKeyword( currentKeyword.previousElementSibling );
 							}
 
 						} else {
@@ -405,13 +409,13 @@
 
 						if ( self.el.highlightedKeyword ) {
 
-							var current = self.el.highlightedKeyword;
+							currentKeyword = self.el.highlightedKeyword;
 
-							self.unhighlightKeyword( current );
+							self.unhighlightKeyword( currentKeyword );
 
-							if ( current.nextElementSibling ) {
+							if ( currentKeyword.nextElementSibling ) {
 
-								self.highlightKeyword( current.nextElementSibling );
+								self.highlightKeyword( currentKeyword.nextElementSibling );
 
 							} else {
 
@@ -427,7 +431,7 @@
 
 					event.preventDefault();
 
-					var position, newHightlighted, availableChoices = self.el.choicesWrap.querySelectorAll(':not(.kwjs-alreadychosen):not(.kwjs-filteredout)');
+					var position, availableChoices = self.el.choicesWrap.querySelectorAll(':not(.kwjs-alreadychosen):not(.kwjs-filteredout)');
 
 					if ( ! self.el.highlightedKeyword ) {
 
@@ -532,7 +536,7 @@
 
 			});
 
-			document.addEventListener('drop', function(event) { console.log(event)
+			document.addEventListener('drop', function(event) {
 
 				event.preventDefault();
 
@@ -585,7 +589,7 @@
 
 			// CONFIRM THE KEYWORD STRING ISN'T EMPTY
 
-			if ( keyword != '' ) {
+			if ( keyword !== '' ) {
 
 				// CORRECT KEYWORD AGAINST AVAILABLE CHOICES
 
@@ -597,7 +601,7 @@
 
 				// IF KEYWORD HAS BEEN CORRECTED TO BLANK
 
-				if ( keyword == '' ) {
+				if ( keyword === '' ) {
 
 					self.el.input.value = '';
 
@@ -818,7 +822,7 @@
 
 					userInput = userInput.toLowerCase();
 
-					if ( availableChoice.indexOf( userInput ) == 0 ) {
+					if ( availableChoice.indexOf( userInput ) === 0 ) {
 
 						availableChoices[i].classList.remove('kwjs-filteredout');
 
@@ -940,7 +944,11 @@
 
 			for ( var name in styles ) {
 
-				element.style[name] = styles[name];
+				if ( styles.hasOwnProperty( name ) ) {
+
+					element.style[name] = styles[name];
+
+				}
 
 			}
 
