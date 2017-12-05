@@ -31,30 +31,37 @@ module.exports = function(grunt) {
 		/**** COPY ALL FILES ****/
 
 		copy: {
-			files: {
+			build: {
 				expand: true,
 				cwd: 'src',
 				src: [
 					'**/*',
 				],
 				dest: '<%= path %>'
+			},
+			dist: {
+				expand: true,
+				cwd: 'src',
+				src: [
+					'**/*',
+				],
+				dest: '<%= path %>',
+				rename: function(dest, src) {
+					return '<%= path %>/' + src.replace('keywords','keywords-' + '<%= pkg.version %>');
+				}
 			}
 		},
 
 		/**** PROCESS JS ****/
 
 		uglify: {
-			my_target: {
-				files: [
-					{
-						expand: true,
-						cwd: 'src',
-						src: ['*.js',],
-						dest: '<%= path %>',
-						ext: '.min.js',
-						extDot: 'last'
-					}
-				]
+			build: {
+				expand: true,
+				cwd: '<%= path %>',
+				src: ['*.js','!*.min.js',],
+				dest: '<%= path %>',
+				ext: '.min.js',
+				extDot: 'last'
 			}
 		},
 
@@ -72,15 +79,14 @@ module.exports = function(grunt) {
 	});
 
 	// 2. Where we tell Grunt we plan to use this plug-in.
-	grunt.loadNpmTasks('grunt-postcss');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-clean');
 
 	// 3. Where we tell Grunt what to do when we type "grunt" into the terminal.
-	grunt.registerTask('build', ['clean', 'copy', 'uglify', 'watch']);
-	grunt.registerTask('dist', ['clean', 'copy', 'uglify']);
+	grunt.registerTask('build', ['clean', 'copy:build', 'uglify', 'watch']);
+	grunt.registerTask('dist', ['clean', 'copy:dist', 'uglify']);
 
 
 };
