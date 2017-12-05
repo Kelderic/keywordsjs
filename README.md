@@ -1,6 +1,6 @@
 # KeywordsJS
 
-A light, dependency-free script to prettify space-delimited inputs. Automatically matches to the styles of existing inputs, and requires no special JS action on form submit.
+A light (3.09KB Gzip'd), dependency-free script to prettify space-delimited inputs. Automatically matches to the styles of existing inputs, and requires no special JS action on form submit.
 
 ![alt text](https://raw.githubusercontent.com/Kelderic/keywordsjs/master/examples/01-single-input/screencast.gif)
 
