@@ -64,9 +64,9 @@
 			self.css = document.createElement('style');
 			self.css.type = 'text/css';
 			self.css.innerHTML += '.kwjs-outerwrap { position: relative; } ';
-			self.css.innerHTML += '.kwjs-keywordwrap { pointer-events: none; position: absolute; padding: 4px 0 4px 4px; } ';
-			self.css.innerHTML += '.kwjs-keyword { display: inline-block; vertical-align:bottom; pointer-events: auto; position: relative; border-radius: 2px; box-sizing: border-box; margin-right: 4px; cursor: move } ';
-			self.css.innerHTML += '.kwjs-choiceswrap { position: absolute; top: calc(100% + 2px); left: 0; right: 0; max-height:300px; overflow:auto; list-style: none; margin:0; padding:0; transform: scaleY(0); transform-origin:top; transition:transform 0.2s } ';
+			self.css.innerHTML += '.kwjs-keywordwrap { pointer-events: none; position: absolute; z-index:1; padding: 4px 0 4px 4px; } ';
+			self.css.innerHTML += '.kwjs-keyword { display: inline-block; font-size: inherit; font-weight: inherit; font-style: inherit; font-family: inherit; vertical-align:bottom; pointer-events: auto; position: relative; border-radius: 2px; box-sizing: border-box; margin-right: 4px; cursor: move } ';
+			self.css.innerHTML += '.kwjs-choiceswrap { position: absolute; top: calc(100% + 2px); left: 0; right: 0; z-index:1; max-height:300px; overflow:auto; list-style: none; margin:0; padding:0; transform: scaleY(0); transform-origin:top; transition:transform 0.2s } ';
 			self.css.innerHTML += '.kwjs-choiceswrap li { cursor:pointer; padding:5px } ';
 			self.css.innerHTML += '.kwjs-choiceswrap li:hover, li.kwjs-highlighted { background:white; } ';
 			self.css.innerHTML += 'li.kwjs-alreadychosen, li.kwjs-filteredout { display:none; } ';
@@ -81,11 +81,16 @@
 			// SET UP ELEMENT REFERENCES
 
 			self.el.input = document.querySelector( params.selector );
-			self.el.hidden = self.el.input.cloneNode();
-			self.el.hidden.type = 'hidden';
-			self.el.input.name = '';
-			self.el.input.id = '';
-			self.el.input.value = '';
+
+			self.el.fake = self.el.input.cloneNode();
+			self.el.fake.name = '';
+			self.el.fake.id = '';
+			self.el.fake.value = '';
+
+			var inputStyles = window.getComputedStyle(self.el.input, null);
+			var displayStyle = inputStyles.getPropertyValue('display');
+
+			self.el.input.type = 'hidden';
 
 			// CREATE ELEMENTS
 
@@ -115,10 +120,9 @@
 			// BE DIFFERENT FOR DIFFERENT INPUTS. THEREFORE THEY CANNOT BE
 			// ASSIGNED USING CSS
 
-			var inputStyles = window.getComputedStyle(self.el.input, null);
-
 			addStyles( self.el.outerWrap, {
-				'display' : ( inputStyles.getPropertyValue('display') == 'inline' ? 'inline-block' : inputStyles.getPropertyValue('display') )
+				'display' : displayStyle == 'inline' ? 'inline-block' : displayStyle,
+				'width' : inputStyles.getPropertyValue('width'),
 			});
 
 			addStyles( self.el.keywordWrap, {
@@ -129,10 +133,6 @@
 			addStyles( self.el.template, {
 				'padding-left' : (parseInt(inputStyles.getPropertyValue('padding-left'))-2)+'px',
 				'padding-right' : (parseInt(inputStyles.getPropertyValue('padding-right'))-2+20)+'px', // PLUS 20 HERE TO MAKE ROOM FOR THE "x"
-				'font-size' : inputStyles.getPropertyValue('font-size'),
-				'font-weight' : inputStyles.getPropertyValue('font-weight'),
-				'font-style' : inputStyles.getPropertyValue('font-style'),
-				'font-family' : inputStyles.getPropertyValue('font-family'),
 				'line-height' : (parseInt(inputStyles.getPropertyValue('height'))-8)+'px',
 				'height' : (parseInt(inputStyles.getPropertyValue('height'))-8)+'px',
 			});
@@ -159,8 +159,8 @@
 
 			self.el.input.parentNode.insertBefore(self.el.outerWrap, self.el.input.nextSibling);
 
-			self.el.outerWrap.appendChild(self.el.hidden);
 			self.el.outerWrap.appendChild(self.el.input);
+			self.el.outerWrap.appendChild(self.el.fake);
 			self.el.outerWrap.appendChild(self.el.keywordWrap);
 			if ( choicesArray.length > 0 ) {
 				self.el.outerWrap.appendChild(self.el.choicesWrap);
@@ -168,7 +168,7 @@
 
 			// RUN INITIAL PARSING IN CASE THERE ARE PRE-FILLED IN VALUES
 
-			self.updateKeywordsFromRealString( self.el.hidden.value );
+			self.updateKeywordsFromRealString( self.el.input.value );
 
 			// ADD EVENT LISTENERS
 
@@ -185,7 +185,7 @@
 
 				window.setTimeout(function(event){
 
-					self.el.input.focus();
+					self.el.fake.focus();
 
 				}, 10);
 
@@ -215,12 +215,12 @@
 
 				}, 20);
 
-				if ( self.el.input.value ) {
+				if ( self.el.fake.value ) {
 
 					window.setTimeout( function(event){
 
 						self.addKeyword({
-							keyword: self.el.input.value,
+							keyword: self.el.fake.value,
 							match: 'begins-with'
 						});
 
@@ -244,12 +244,12 @@
 
 						event.preventDefault();
 
-						if ( self.el.input.value ) {
+						if ( self.el.fake.value ) {
 
 							window.setTimeout( function(event){
 
 								self.addKeyword({
-									keyword: self.el.input.value,
+									keyword: self.el.fake.value,
 									match: 'begins-with'
 								});
 
@@ -270,7 +270,7 @@
 
 					} else {
 
-						self.updateFilteredChoicesFromInput( self.el.input.value + event.key );
+						self.updateFilteredChoicesFromInput( self.el.fake.value + event.key );
 
 					}
 
@@ -284,14 +284,14 @@
 
 				if ( event.which == 13 ) { // console.log('Enter Key');
 
-					if ( self.el.input.value ) {
+					if ( self.el.fake.value ) {
 
 						event.preventDefault();
 
 						window.setTimeout( function(event){
 
 							self.addKeyword({
-								keyword: self.el.input.value,
+								keyword: self.el.fake.value,
 								match: 'begins-with'
 							});
 
@@ -312,7 +312,7 @@
 
 				} else if ( event.which == 8 ) { // console.log('Backspace Key');
 
-					if ( ! self.el.input.value && self.el.keywordWrap.children.length > 0 ) {
+					if ( ! self.el.fake.value && self.el.keywordWrap.children.length > 0 ) {
 
 						event.preventDefault();
 
@@ -326,7 +326,7 @@
 
 							} else {
 
-								self.el.input.focus();
+								self.el.fake.focus();
 
 							}
 
@@ -342,7 +342,7 @@
 
 						window.setTimeout( function(event){
 
-							self.updateFilteredChoicesFromInput( self.el.input.value );
+							self.updateFilteredChoicesFromInput( self.el.fake.value );
 
 						}, 10 );
 
@@ -350,7 +350,7 @@
 
 				} else if ( event.which == 46 ) { // console.log('Delete Key');
 
-					if ( ! self.el.input.value && self.el.keywordWrap.children.length > 0 ) {
+					if ( ! self.el.fake.value && self.el.keywordWrap.children.length > 0 ) {
 
 						if ( self.el.highlightedKeyword ) {
 
@@ -362,7 +362,7 @@
 
 							} else {
 
-								self.el.input.focus();
+								self.el.fake.focus();
 
 							}
 
@@ -374,7 +374,7 @@
 
 						window.setTimeout( function(event){
 
-							self.updateFilteredChoicesFromInput( self.el.input.value );
+							self.updateFilteredChoicesFromInput( self.el.fake.value );
 
 						}, 10 );
 
@@ -382,7 +382,7 @@
 
 				} else if ( event.which == 37 ) { // console.log('Arrow Left Key');
 
-					if ( ! self.el.input.value && self.el.keywordWrap.children.length > 0 ) {
+					if ( ! self.el.fake.value && self.el.keywordWrap.children.length > 0 ) {
 
 						if ( self.el.highlightedKeyword ) {
 
@@ -405,7 +405,7 @@
 
 				} else if ( event.which == 39 ) { // console.log('Arrow Right Key');
 
-					if ( ! self.el.input.value && self.el.keywordWrap.children.length > 0 ) {
+					if ( ! self.el.fake.value && self.el.keywordWrap.children.length > 0 ) {
 
 						if ( self.el.highlightedKeyword ) {
 
@@ -419,7 +419,7 @@
 
 							} else {
 
-								self.el.input.focus();
+								self.el.fake.focus();
 
 							}
 
@@ -467,7 +467,7 @@
 
 				window.setTimeout(function(event){
 
-					self.updateFilteredChoicesFromInput( self.el.input.value );
+					self.updateFilteredChoicesFromInput( self.el.fake.value );
 
 				}, 10 );
 
@@ -479,7 +479,7 @@
 
 					self.removeKeyword( event.target.parentNode );
 
-					self.el.input.focus();
+					self.el.fake.focus();
 
 				}
 
@@ -552,7 +552,7 @@
 
 					// UPDATE HIDDEN SPACE DELIMITED VALUE
 
-					self.el.hidden.value = self.buildRealStringFromKeywords();
+					self.el.input.value = self.buildRealStringFromKeywords();
 
 				}
 
@@ -603,9 +603,9 @@
 
 				if ( keyword === '' ) {
 
-					self.el.input.value = '';
+					self.el.fake.value = '';
 
-					self.updateFilteredChoicesFromInput( self.el.input.value );
+					self.updateFilteredChoicesFromInput( self.el.fake.value );
 
 				} else {
 
@@ -625,15 +625,15 @@
 
 					// UPDATE PADDING ON INPUT
 
-					self.el.input.style['padding-left'] = ( self.el.keywordWrap.offsetWidth + 6 ) + 'px';
+					self.el.fake.style['padding-left'] = ( self.el.keywordWrap.offsetWidth + 6 ) + 'px';
 
 					// UPDATE HIDDEN SPACE DELIMITED VALUE
 
-					self.el.hidden.value = self.buildRealStringFromKeywords();
+					self.el.input.value = self.buildRealStringFromKeywords();
 
 					// REMOVE TEXT FROM INPUT
 
-					self.el.input.value = '';
+					self.el.fake.value = '';
 
 					// UPDATE CHOICES
 
@@ -641,7 +641,7 @@
 
 						self.updateAlreadyChosenChoicesFromKeywords();
 
-						self.updateFilteredChoicesFromInput( self.el.input.value );
+						self.updateFilteredChoicesFromInput( self.el.fake.value );
 
 					}
 
@@ -663,11 +663,11 @@
 
 			// UPDATE PADDING ON INPUT
 
-			self.el.input.style['padding-left'] = ( self.el.keywordWrap.offsetWidth + 6 ) + 'px';
+			self.el.fake.style['padding-left'] = ( self.el.keywordWrap.offsetWidth + 6 ) + 'px';
 
 			// UPDATE HIDDEN SPACE DELIMITED VALUE
 
-			self.el.hidden.value = self.buildRealStringFromKeywords();
+			self.el.input.value = self.buildRealStringFromKeywords();
 
 			// UPDATE CHOICES
 
@@ -689,7 +689,7 @@
 
 			addStyles( keywordEl, self.colors.highlight );
 
-			self.el.input.blur();
+			self.el.fake.blur();
 
 			keywordEl.firstElementChild.focus();
 
@@ -782,7 +782,7 @@
 
 			for ( var i = 1, l = choicesEls.length; i < l; i++ ) {
 
-				if ( self.el.hidden.value.indexOf(choicesEls[i].textContent) > -1 ) {
+				if ( self.el.input.value.indexOf(choicesEls[i].textContent) > -1 ) {
 
 					choicesEls[i].classList.add('kwjs-alreadychosen');
 
