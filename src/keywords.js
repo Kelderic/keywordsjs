@@ -22,7 +22,7 @@
 
 			}
 
-			// SET UP KEYWORD COLORS
+			// CHECK FOR COLORS FROM PARAMS
 
 			self.colors = {};
 
@@ -41,15 +41,11 @@
 
 			}
 
-			// SET UP DELIMITER
+			// CHECK FOR DELIMITER FROM PARAMS
 
 			self.delimiter = 'delimiter' in params ? params.delimiter : ' ';
 
-			// SET UP FLAG FOR DRAGGING
-
-			self.dragging = false;
-
-			// SET UP CHOICES
+			// CHECK FOR CHOICES FROM PARAMS
 
 			self.restrict = false;
 			var choicesArray = 'choices' in params ? params.choices : [];
@@ -58,6 +54,10 @@
 				choicesString += '<li>' + choicesArray[i] + '</li>';
 				self.restrict = true;
 			}
+
+			// SET UP FLAG FOR DRAGGING
+
+			self.dragging = false;
 
 			// SET UP CSS ELEMENT
 
