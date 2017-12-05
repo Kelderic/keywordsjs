@@ -53,39 +53,40 @@
 		<form action="endpoint.html" method="get">
 			<h4>Name (regular input)</h4>
 			<input type="text" id="name" name="name" />
-			<h4>Keywords</h4>
-			<input type="text" id="keywords" name="keywords" />
+			<h4>Input with Choices from Attribute</h4>
+			<input type="text" id="keywords" name="keywords" kwjs-delimiter=" " kwjs-choices="Jennifer Blake Hannah David Drew Jimmy Andrew" />
+			<br><br>
+			<h4>Input with Choices from Options</h4>
+			<input type="text" id="tags" name="tags" />
 			<br><br>
 			<button>Go</button>
 		</form>
 	</body>
 	<script>
+		var colors = {
+			'default' : {
+				'background' : 'white',
+				'color' : 'rgb(102, 102, 102)',
+				'box-shadow' : '0 0 1px 1px rgb(180, 180, 180)'
+			},
+			'highlight' : {
+				'background' : 'rgb(0,140,240)',
+				'color' : 'white',
+			}
+		}
 		var keywords = new Keywords({
 			'selector': '#keywords',
-			'colors' : {
-				'default' : {
-					'background' : 'white',
-					'color' : 'rgb(102, 102, 102)',
-					'box-shadow' : '0 0 1px 1px rgb(180, 180, 180)'
-				},
-				'highlight' : {
-					'background' : 'rgb(0,140,240)',
-					'color' : 'white',
-				}
-			},
+			'colors' : colors
+		});
+		var tags = new Keywords({
+			'selector': '#tags',
+			'colors' : colors,
 			'choices' : [
 				'Andy',
 				'John',
 				'Sally',
 				'Alex',
-				'Oliver',
-				'Jennifer',
-				'Blake',
-				'Hannah',
-				'David',
-				'Drew',
-				'Jimmy',
-				'Andrew'
+				'Oliver'
 			]
 		});
 	</script>
