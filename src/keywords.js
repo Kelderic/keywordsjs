@@ -174,20 +174,28 @@
 
 			self.el.choicesWrap.addEventListener('mousedown', function(event) {
 
-				if ( event.target.nodeName.toLowerCase() == 'li' ) {
+				if ( event.buttons === 1 ) {
 
-					self.addKeyword({
-						keyword: event.target.textContent,
-						match: 'exact'
-					});
+					if ( event.target.nodeName.toLowerCase() == 'li' ) {
+
+						self.addKeyword({
+							keyword: event.target.textContent,
+							match: 'exact'
+						});
+
+					}
+
+					window.setTimeout(function(event){
+
+						self.el.fake.focus();
+
+					}, 10);
+
+				} else {
+
+					event.preventDefault();
 
 				}
-
-				window.setTimeout(function(event){
-
-					self.el.fake.focus();
-
-				}, 10);
 
 			});
 
