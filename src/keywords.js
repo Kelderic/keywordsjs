@@ -170,6 +170,8 @@
 			addStyles( self.el.outerWrap, {
 				'display' : displayStyle == 'inline' ? 'inline-block' : displayStyle,
 				'width' : inputStyles.getPropertyValue('width'),
+				'min-width' : inputStyles.getPropertyValue('min-width'),
+				'max-width' : inputStyles.getPropertyValue('max-width'),
 			});
 
 			addStyles( self.el.keywordWrap, {
