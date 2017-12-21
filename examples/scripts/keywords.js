@@ -170,6 +170,8 @@
 			addStyles( self.el.outerWrap, {
 				'display' : displayStyle == 'inline' ? 'inline-block' : displayStyle,
 				'width' : inputStyles.getPropertyValue('width'),
+				'min-width' : inputStyles.getPropertyValue('min-width'),
+				'max-width' : inputStyles.getPropertyValue('max-width'),
 			});
 
 			addStyles( self.el.keywordWrap, {
@@ -221,7 +223,7 @@
 
 			self.el.choicesWrap.addEventListener('mousedown', function(event) {
 
-				if ( event.buttons === 1 ) {
+				if ( event.button === 0 ) {
 
 					if ( event.target.nodeName.toLowerCase() == 'li' ) {
 

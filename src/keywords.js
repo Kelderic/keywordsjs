@@ -223,7 +223,7 @@
 
 			self.el.choicesWrap.addEventListener('mousedown', function(event) {
 
-				if ( event.buttons === 1 ) {
+				if ( event.button === 0 ) {
 
 					if ( event.target.nodeName.toLowerCase() == 'li' ) {
 
