@@ -115,7 +115,9 @@
 
 			} else if ( self.el.input.getAttribute('kwjs-choices') !== null ) {
 
-				var choicesArray = self.el.input.getAttribute('kwjs-choices').split( self.delimiter );
+				var choicesString = self.el.input.getAttribute('kwjs-choices');
+
+				var choicesArray = self.el.input.getAttribute('kwjs-choices').split( self.delimiter ).filter(function(el) {return el.length != 0});
 
 			} else {
 
