@@ -189,7 +189,7 @@
 			addStyles( self.el.choicesWrap, {
 				'background' : inputStyles.getPropertyValue('background'),
 				'background-color' : inputStyles.getPropertyValue('background-color'),
-				'box-shadow' : inputStyles.getPropertyValue('box-shadow'),
+				'box-shadow' : '0px 0px 2px 1px rgba(0, 0, 0, 0.3)'
 			});
 
 			addStyles( self.el.template, self.colors.default );
