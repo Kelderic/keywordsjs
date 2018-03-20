@@ -20,7 +20,7 @@
 
 			} else if ( 'el' in params ) {
 
-				var input = el;
+				var input = params.el;
 
 			}
 
