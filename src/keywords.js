@@ -12,11 +12,19 @@
 
 			var self = this;
 
-			// CHECK FOR REQUIRED SELECTOR
+			// CHECK FOR REQUIRED INPUT
 
-			var hasSelector = 'selector' in params;
+			if ( 'selector' in params ) {
 
-			if ( ! hasSelector ) {
+				var input = document.querySelector( params.selector );
+
+			} else if ( 'el' in params ) {
+
+				var input = el;
+
+			}
+
+			if ( ! input ) {
 
 				return false;
 
@@ -58,7 +66,7 @@
 
 			// SET UP ELEMENT REFERENCES
 
-			self.el.input = document.querySelector( params.selector );
+			self.el.input = input;
 
 			self.el.fake = self.el.input.cloneNode();
 			self.el.fake.name = '';
