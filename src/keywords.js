@@ -1064,6 +1064,50 @@
 
 		}
 
+		HTMLElement.prototype.getVisibleBackgroundColor = function() {
+
+			var el = this;
+			var background = '';
+
+			while ( background == '' || background == 'rgba(0, 0, 0, 0)' || background == 'transparent' ) {
+
+				background = getBackground(el)
+
+				if ( el.tagName.toLowerCase() === 'html' ) { 
+					background = 'white';
+					break;
+				}
+
+				el = el.parentNode;
+
+			}
+
+			return background;
+
+			function getBackground( el ) {
+
+				var styles = window.getComputedStyle(el, null);
+				var background = '';
+
+				if ( background === '' ) {
+					background = el.style['background-color'];
+				}
+				if ( background === '' ) {
+					background = el.style['background'];
+				}
+				if ( background === '' ) {
+					background = styles.getPropertyValue('background-color');
+				}
+				if ( background === '' ) {
+					background = styles.getPropertyValue('background');
+				}
+
+				return background;
+
+			}
+
+		};
+
 		return Class;
 
 	}());
