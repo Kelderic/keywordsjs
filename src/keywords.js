@@ -74,7 +74,6 @@
 			self.el.fake.value = '';
 
 			var inputStyles = window.getComputedStyle(self.el.input, null);
-			var displayStyle = inputStyles.getPropertyValue('display');
 
 			self.el.input.type = 'hidden';
 
@@ -178,7 +177,7 @@
 			// ASSIGNED USING CSS
 
 			addStyles( self.el.outerWrap, {
-				'display' : displayStyle == 'inline' ? 'inline-block' : displayStyle,
+				'display' : inputStyles.getPropertyValue('display') == 'inline' ? 'inline-block' : inputStyles.getPropertyValue('display'),
 				'width' : inputStyles.getPropertyValue('width'),
 				'min-width' : inputStyles.getPropertyValue('min-width'),
 				'max-width' : inputStyles.getPropertyValue('max-width'),
