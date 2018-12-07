@@ -20,7 +20,7 @@
 
 			} else if ( 'el' in params ) {
 
-				var input = el;
+				var input = params.el;
 
 			}
 
@@ -47,14 +47,16 @@
 				self.css = document.createElement('style');
 				self.css.type = 'text/css';
 				self.css.id = 'kwjs-css';
-				self.css.innerHTML += '.kwjs-outerwrap { position: relative; } ';
-				self.css.innerHTML += '.kwjs-keywordwrap { pointer-events: none; position: absolute; z-index:1; padding: 4px 0 4px 4px; } ';
-				self.css.innerHTML += '.kwjs-keyword { display: inline-block; font-size: inherit; font-weight: inherit; font-style: inherit; font-family: inherit; vertical-align:bottom; pointer-events: auto; position: relative; border-radius: 2px; box-sizing: border-box; margin-right: 4px; cursor: move } ';
-				self.css.innerHTML += '.kwjs-choiceswrap { position: absolute; top: 100%; left: 0; right: 0; z-index:2; max-height:300px; overflow:auto; list-style: none; margin:0; padding:0; transform: scaleY(0); transform-origin:top; transition:transform 0.2s } ';
-				self.css.innerHTML += '.kwjs-choiceswrap li { cursor:pointer; padding:5px } ';
-				self.css.innerHTML += '.kwjs-choiceswrap li:hover, li.kwjs-highlighted { background:white; } ';
-				self.css.innerHTML += 'li.kwjs-alreadychosen, li.kwjs-filteredout { display:none; } ';
-				self.css.innerHTML += '.kwjs-focused .kwjs-choiceswrap { transform:none; } ';
+				self.css.innerHTML = `
+					.kwjs-outerwrap { position: relative; }
+					.kwjs-keywordwrap { pointer-events: none; position: absolute; z-index:1; padding: 4px 0 4px 4px; }
+					.kwjs-keyword { display: inline-block; font-size: inherit; font-weight: inherit; font-style: inherit; font-family: inherit; vertical-align:bottom; pointer-events: auto; position: relative; border-radius: 2px; box-sizing: border-box; margin-right: 4px; cursor: move }
+					.kwjs-choiceswrap { position: absolute; top: 100%; left: 0; right: 0; z-index:2; max-height:300px; overflow:auto; list-style: none; margin:0; padding:0; transform: scaleY(0); transform-origin:top; transition:transform 0.2s }
+					.kwjs-choiceswrap li { cursor:pointer; padding:5px }
+					.kwjs-choiceswrap li:hover, li.kwjs-highlighted { background:${input.parentElement.getVisibleBackgroundColor()}; }
+					li.kwjs-alreadychosen, li.kwjs-filteredout { display:none; }
+					.kwjs-focused .kwjs-choiceswrap { transform:none; }
+				`;
 
 				document.body.appendChild(self.css);
 
@@ -74,7 +76,7 @@
 			self.el.fake.value = '';
 
 			var inputStyles = window.getComputedStyle(self.el.input, null);
-			var displayStyle = inputStyles.getPropertyValue('display');
+			var originalDisplayStyle = inputStyles.getPropertyValue('display');
 
 			self.el.input.type = 'hidden';
 
@@ -178,7 +180,7 @@
 			// ASSIGNED USING CSS
 
 			addStyles( self.el.outerWrap, {
-				'display' : displayStyle == 'inline' ? 'inline-block' : displayStyle,
+				'display' : originalDisplayStyle == 'inline' ? 'inline-block' : originalDisplayStyle,
 				'width' : inputStyles.getPropertyValue('width'),
 				'min-width' : inputStyles.getPropertyValue('min-width'),
 				'max-width' : inputStyles.getPropertyValue('max-width'),
@@ -1064,6 +1066,50 @@
 			}
 
 		}
+
+		HTMLElement.prototype.getVisibleBackgroundColor = function() {
+
+			var el = this;
+			var background = '';
+
+			while ( background == '' || background == 'rgba(0, 0, 0, 0)' || background == 'transparent' ) {
+
+				background = getBackground(el)
+
+				if ( el.tagName.toLowerCase() === 'html' ) { 
+					background = 'white';
+					break;
+				}
+
+				el = el.parentNode;
+
+			}
+
+			return background;
+
+			function getBackground( el ) {
+
+				var styles = window.getComputedStyle(el, null);
+				var background = '';
+
+				if ( background === '' ) {
+					background = el.style['background-color'];
+				}
+				if ( background === '' ) {
+					background = el.style['background'];
+				}
+				if ( background === '' ) {
+					background = styles.getPropertyValue('background-color');
+				}
+				if ( background === '' ) {
+					background = styles.getPropertyValue('background');
+				}
+
+				return background;
+
+			}
+
+		};
 
 		return Class;
 
