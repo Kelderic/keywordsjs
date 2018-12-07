@@ -53,7 +53,7 @@
 					.kwjs-keyword { display: inline-block; font-size: inherit; font-weight: inherit; font-style: inherit; font-family: inherit; vertical-align:bottom; pointer-events: auto; position: relative; border-radius: 2px; box-sizing: border-box; margin-right: 4px; cursor: move }
 					.kwjs-choiceswrap { position: absolute; top: 100%; left: 0; right: 0; z-index:2; max-height:300px; overflow:auto; list-style: none; margin:0; padding:0; transform: scaleY(0); transform-origin:top; transition:transform 0.2s }
 					.kwjs-choiceswrap li { cursor:pointer; padding:5px }
-					.kwjs-choiceswrap li:hover, li.kwjs-highlighted { background:white; }
+					.kwjs-choiceswrap li:hover, li.kwjs-highlighted { background:${input.parentElement.getVisibleBackgroundColor()}; }
 					li.kwjs-alreadychosen, li.kwjs-filteredout { display:none; }
 					.kwjs-focused .kwjs-choiceswrap { transform:none; }
 				`;
