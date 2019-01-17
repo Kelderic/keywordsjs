@@ -560,7 +560,8 @@
 
 				if ( keywordEl ) {
 
-					event.dataTransfer.setData( 'text/html', keywordEl );
+					event.dataTransfer.setDragImage(keywordEl,0,0);
+					event.dataTransfer.setData('text/plain', null);
 
 					self.el.beingDragged = keywordEl;
 
