@@ -77,6 +77,7 @@
 
 			var inputStyles = window.getComputedStyle(self.el.input, null);
 			var originalDisplayStyle = inputStyles.getPropertyValue('display');
+			var originalHeight = getRealHeight(self.el.input);
 
 			self.el.input.type = 'hidden';
 
@@ -194,9 +195,11 @@
 			addStyles( self.el.template, {
 				'padding-left' : (parseInt(inputStyles.getPropertyValue('padding-left'))-2)+'px',
 				'padding-right' : (parseInt(inputStyles.getPropertyValue('padding-right'))-2+20)+'px', // PLUS 20 HERE TO MAKE ROOM FOR THE "x"
-				'line-height' : (parseInt(inputStyles.getPropertyValue('height'))-8)+'px',
-				'height' : (parseInt(inputStyles.getPropertyValue('height'))-8)+'px',
+				'line-height' : (originalHeight-8)+'px',
+				'height' : (originalHeight-8)+'px',
 			});
+
+			console.log(originalHeight)
 
 			addStyles( self.el.choicesWrap, {
 				'background' : inputStyles.getPropertyValue('background'),
@@ -1067,6 +1070,39 @@
 			}
 
 		}
+
+		function getRealHeight( element ) {
+
+			var self = element;
+
+			var COMPUTED_SIZE_INCLUDES_PADDING = (function() {
+				var e = document.createElement('div');
+					e.style.cssText = 'height:10px;padding:2px;-webkit-box-sizing:border-box;box-sizing:border-box;';
+				document.body.appendChild(e);
+				var height = window.getComputedStyle(e, null).height;
+				var ret = height === '10px';
+				document.body.removeChild(e);
+				return ret;
+			}());
+
+			var convertToFloat = function(value) {
+				if ( !isNaN(parseFloat(value)) ) {
+					return parseFloat(value);
+				}
+				return 0;
+			};
+
+			var styles = window.getComputedStyle(self, null);
+
+			var height = convertToFloat(styles.height);
+
+			if ( ! COMPUTED_SIZE_INCLUDES_PADDING ) {
+				height += convertToFloat(styles.paddingTop) + convertToFloat(styles.paddingBottom) + convertToFloat(styles.borderTopWidth) + convertToFloat(styles.borderBottomWidth);
+			}
+
+			return height;
+
+		};
 
 		HTMLElement.prototype.getVisibleBackgroundColor = function() {
 
